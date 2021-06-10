@@ -15,7 +15,7 @@ from src.settings import CLEANED_DATA_PATH, NOTCLEANED_DATA_PATH
 
 
 def get_mutag_data(
-    train: bool = False, cleaned: bool = False, test_size: int = 0.16, seed: int = 12345
+    train: bool = False, cleaned: bool = False, test_size: int = 0.2, seed: int = 12345
 ):
 
     dataset = datasets.TUDataset(
