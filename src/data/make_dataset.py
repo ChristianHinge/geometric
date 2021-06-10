@@ -37,9 +37,9 @@ def get_mutag_data(
     split_idx = int(test_size * len(dataset))
 
     if train:
-        dataset = dataset[:split_idx]
-    else:
         dataset = dataset[split_idx:]
+    else:
+        dataset = dataset[:split_idx]
 
     return dataset
 
