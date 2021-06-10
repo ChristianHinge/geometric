@@ -6,7 +6,6 @@ from torch_geometric.nn import global_mean_pool
 
 from src.data.make_dataset import get_mutag_data, get_dataloader
 
-
 class GCN(torch.nn.Module):
     def __init__(
         self,
