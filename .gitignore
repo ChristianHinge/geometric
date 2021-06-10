@@ -8,6 +8,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+venv/
 build/
 develop-eggs/
 dist/
@@ -76,7 +77,11 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-/data/
+# /data/
+
+# datasets
+*.pt
+*MUTAG*
 
 # Mac OS-specific storage files
 .DS_Store
