@@ -62,7 +62,7 @@ sphinxcontrib-htmlhelp==2.0.0
 sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-qthelp==1.0.3
 sphinxcontrib-serializinghtml==1.1.5
--e git+https://github.com/ChristianHinge/geometric.git@8aa10824876972ed1f6835e863955c6f8720c4c8#egg=src
+-e git+https://github.com/ChristianHinge/geometric.git@5ccd04764ed2b564fa2dda1fb28a145ec2f49755#egg=src
 threadpoolctl==2.1.0
 toml==0.10.2
 torch-geometric==1.7.0
