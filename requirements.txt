@@ -1,5 +1,9 @@
 appdirs==1.4.4
 ase==3.21.1
+attrs==21.2.0
+awscli==1.19.91
+Babel==2.9.1
+botocore==1.20.91
 black==21.5b2
 certifi==2021.5.30
 chardet==4.0.0
@@ -10,6 +14,8 @@ flake8==3.9.2
 googledrivedownloader==0.4
 h5py==3.2.1
 idna==2.10
+imagesize==1.2.0
+iniconfig==1.1.1
 isodate==0.6.0
 isort==5.8.0
 Jinja2==3.0.1
@@ -26,9 +32,13 @@ numpy==1.20.3
 pandas==1.2.4
 pathspec==0.8.1
 Pillow==8.2.0
+pluggy==0.13.1
+py==1.10.0
+pyasn1==0.4.8
 pycodestyle==2.7.0
 pyflakes==2.3.1
 pyparsing==2.4.7
+pytest==6.2.4
 python-dateutil==2.8.1
 python-louvain==0.15
 pytz==2021.1
