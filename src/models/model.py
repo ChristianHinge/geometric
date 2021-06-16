@@ -60,38 +60,39 @@ class GCN(pl.LightningModule):
     def shared_step(self,batch,batch_idx):
 
         outputs = self.forward(batch.x, batch.edge_index,batch.batch)
-        preds = F.softmax(outputs).topk(1)
+        probs = F.softmax(outputs)
+        preds = torch.argmax(probs,dim=1)
         loss = F.cross_entropy(outputs, batch.y)
 
-        return loss, preds, batch.y
+        return loss, probs, batch.y
 
     def training_step(self, batch, batch_idx):
 
-        loss, preds, targets = self.shared_step(batch,batch_idx)
-        self.train_acc(preds,targets)
-        self.log({'train/loss_epoch': loss},on_epoch=True)
-        self.log('train/acc_epoch', self.train_acc, on_epoch=True)
+        loss, probs, targets = self.shared_step(batch,batch_idx)
+        self.train_acc(probs,targets)
+        self.log('train/loss',loss,on_epoch=True)
+        self.log('train/accuracy', self.train_acc, on_epoch=True)
 
         return loss
 
     def validation_step(self, batch, batch_idx):
 
-        loss, preds, targets = self.shared_step(batch,batch_idx)
+        loss, probs, targets = self.shared_step(batch,batch_idx)
 
-        self.val_acc(preds, targets)
+        self.val_acc(probs, targets)
 
-        self.log("validation/loss_epoch", loss,on_epoch=True)  
-        self.log('validation/acc_epoch', self.valid_acc,on_epoch=True)
+        self.log("validation/loss", loss,on_epoch=True)  
+        self.log('validation/accuracy', self.val_acc,on_epoch=True)
         
     def test_step(self, batch, batch_idx):
 
-        loss, preds, targets = self.shared_step(batch,batch_idx)
-        self.test_acc(preds, targets)
-        self.log("test/ce_loss_epoch", loss, on_step=False, on_epoch=True)
-        self.log("test/acc_epoch", self.test_acc, on_step=False, on_epoch=True)
+        loss, probs, targets = self.shared_step(batch,batch_idx)
+        self.test_acc(probs, targets)
+        self.log("test/loss", loss, on_step=False, on_epoch=True)
+        self.log("test/accuracy", self.test_acc, on_step=False, on_epoch=True)
 
     def configure_optimizers(self):
-        return torch.optim.Adam(self.model.parameters(), lr=self.lr)
+        return torch.optim.Adam(self.parameters(), lr=self.lr)
 
     
 
