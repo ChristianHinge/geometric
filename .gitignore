@@ -13,6 +13,7 @@ __pycache__/
 .Python
 env/
 venv/
+.venv/
 build/
 develop-eggs/
 dist/
@@ -82,6 +83,7 @@ target/
 
 # exclude data from source control by default
 # /data/
+/wandb
 
 # datasets
 *.pt
@@ -93,6 +95,9 @@ target/
 # vim
 *.swp
 *.swo
+
+# wandb logs
+*wandb
 
 # Mypy cache
 .mypy_cache/
