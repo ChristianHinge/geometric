@@ -1,5 +1,5 @@
 import torch
-from torch.nn import Linear, ModuleDict
+from torch.nn import Linear, ModuleList
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 from torch_geometric.nn import global_mean_pool
@@ -13,7 +13,7 @@ class GCN(pl.LightningModule):
         self,
         input_num_features: int,
         num_classes: int,
-        hidden_channels: dict = {"conv1": 64, "conv2": 64, "conv3": 64},
+        hidden_channels: list = [64,64,64],
         lr: float=1e-3,
         p: float = 0.5,
         seed: int = 12345,
@@ -32,10 +32,10 @@ class GCN(pl.LightningModule):
         self.val_acc = acc.clone()
         self.test_acc = acc.clone()
 
-        self.conv_layers = ModuleDict()
+        self.conv_layers = ModuleList()
         current_dim = input_num_features
-        for conv_name, hchannel in hidden_channels.items():
-            self.conv_layers[conv_name] = GCNConv(current_dim, hchannel)
+        for hchannel in hidden_channels:
+            self.conv_layers.append(GCNConv(current_dim, hchannel))
             current_dim = hchannel
 
         self.linear = Linear(current_dim, num_classes)
@@ -45,7 +45,7 @@ class GCN(pl.LightningModule):
 
     def forward(self, x, edge_index, batch):
         # 1. Obtain node embeddings
-        for layer in self.conv_layers.values():
+        for layer in self.conv_layers:
             x = F.relu(layer(x, edge_index))
 
         # 2. Readout layer
