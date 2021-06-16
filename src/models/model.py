@@ -14,13 +14,15 @@ class GCN(pl.LightningModule):
         input_num_features: int,
         num_classes: int,
         hidden_channels: dict = {"conv1": 64, "conv2": 64, "conv3": 64},
-        seed: int = 12345,
+        lr: float=1e-3,
         p: float = 0.5,
+        seed: int = 12345,
     ):
         super(GCN, self).__init__()
         torch.manual_seed(seed)
 
         self.p = p
+        self.lr = lr
 
         # initialize module here    
         acc = pl.metrics.Accuracy()
@@ -37,6 +39,9 @@ class GCN(pl.LightningModule):
             current_dim = hchannel
 
         self.linear = Linear(current_dim, num_classes)
+
+        # log hyperparameters
+        self.save_hyperparameters()
 
     def forward(self, x, edge_index, batch):
         # 1. Obtain node embeddings
@@ -55,60 +60,40 @@ class GCN(pl.LightningModule):
     def shared_step(self,batch,batch_idx):
 
         outputs = self.forward(batch.x, batch.edge_index,batch.batch)
-        preds = F.softmax(outputs)
-        loss = F.cross_entropy(preds, batch.y)
+        preds = F.softmax(outputs).topk(1)
+        loss = F.cross_entropy(outputs, batch.y)
 
         return loss, preds, batch.y
 
     def training_step(self, batch, batch_idx):
 
         loss, preds, targets = self.shared_step(batch,batch_idx)
-        self.log({'train/CE loss': loss})
-        return {'loss':loss, 'preds':preds, 'targets':targets}
+        self.train_acc(preds,targets)
+        self.log({'train/loss_epoch': loss},on_epoch=True)
+        self.log('train/acc_epoch', self.train_acc, on_epoch=True)
 
-    def training_step_end(self,outs):
-        # log accuracy on each step_end, for compatibility with data-parallel
-        self.train_acc(outs['preds'],outs['targets'])
-        self.log({'train/acc_step': self.train_acc})
-
-    def training_epoch_end(self,outs):
-        # additional log mean accuracy at the end of the epoch
-        self.log("train/acc_epoch", self.train_acc.compute())
+        return loss
 
     def validation_step(self, batch, batch_idx):
 
         loss, preds, targets = self.shared_step(batch,batch_idx)
-        self.log({'validation/CE loss': loss})
 
-        return {'loss':loss, 'preds':preds, 'targets':targets}
+        self.val_acc(preds, targets)
 
-    def validation_step_end(self,outs):
-        # log accuracy on each step_end, for compatibility with data-parallel
-        self.val_acc(outs['preds'],outs['targets'])
-        self.log({'validation/acc_step': self.val_acc})
-
-    def validation_epoch_end(self,outs):
-        # additional log mean accuracy at the end of the epoch
-        self.log("validation/acc_epoch", self.val_acc.compute())
-
+        self.log("validation/loss_epoch", loss,on_epoch=True)  
+        self.log('validation/acc_epoch', self.valid_acc,on_epoch=True)
+        
     def test_step(self, batch, batch_idx):
 
         loss, preds, targets = self.shared_step(batch,batch_idx)
-        self.log({'test/CE loss': loss})
+        self.test_acc(preds, targets)
+        self.log("test/ce_loss_epoch", loss, on_step=False, on_epoch=True)
+        self.log("test/acc_epoch", self.test_acc, on_step=False, on_epoch=True)
 
-        return {'loss':loss, 'preds':preds, 'targets':targets}
-
-    def test_step_end(self,outs):
-        # log accuracy on each step_end, for compatibility with data-parallel
-        self.test_acc(outs['preds'],outs['targets'])
-        self.log({'test/acc_step': self.test_acc})
-
-    def test_epoch_end(self,batch,batch_idx):
-        # additional log mean accuracy at the end of the epoch
-        self.log("test/acc_epoch", self.test_acc.compute())
+    def configure_optimizers(self):
+        return torch.optim.Adam(self.model.parameters(), lr=self.lr)
 
     
-
 
 if __name__ == "__main__":
     dataset = get_mutag_data(train=True, cleaned=False)
