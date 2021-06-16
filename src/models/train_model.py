@@ -2,6 +2,9 @@ import wandb
 
 
 def setup_wandb(config):
+
+    args = {}
+
     # 1. Start a new run
     wandb.init(project='GNN', entity='classy_geometric',config=config)
 
@@ -11,8 +14,3 @@ def setup_wandb(config):
 
     # 3. Log gradients and model parameters
     wandb.watch(model)
-
-for batch_idx, (data, target) in enumerate(train_loader):
-if batch_idx % args.log_interval == 0:
-    # 4. Log metrics to visualize performance
-    wandb.log({"loss": loss})
