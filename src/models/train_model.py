@@ -32,10 +32,12 @@ def train(
         lr=lr,
         p=p,
     )
+
+    filename = f"{name}"
     checkpoint_callback = ModelCheckpoint(
         monitor="validation/accuracy",
         dirpath=CHECKPOINT_PATH,
-        filename=f"{name}", #+ "-{epoch:02d}-{validation/accuracy:.2f}",
+        filename=filename,
         save_top_k=1,
         mode="max",
     )
@@ -54,7 +56,12 @@ def train(
     )
 
     trainer.fit(model, dm)
-    print(wandb_logger.version)
-    # trainer.save_checkpoint(os.path.join(CHECKPOINT_PATH,name+'.ckpt'))
-    # wandb.save(name+'.ckpt')
+
+    # Append wandb run ID to name in order for continue test logging if needed
+    best_path = checkpoint_callback.best_model_path
+    version = wandb_logger.version
+    new_path_name = os.path.join(CHECKPOINT_PATH,filename+'_'+version+'.ckpt')
+
+    os.rename(best_path,new_path_name)
+
 
