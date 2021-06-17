@@ -37,7 +37,7 @@ class ArgumentParser:
                 raise KeyError(f'Config {self.args.config_section} not found in configuration file')
         else:
             self.settings = self.config["DEFAULT"]
-        
+
         self.settings["AML"] = str(self.args.aml)
 
     def run_train(self):
@@ -45,7 +45,7 @@ class ArgumentParser:
         print(self.settings["Epochs"])
         pass
 
-    def run_eval(self):
+    def run_test(self):
         #uses self.settings
         pass
 
