@@ -3,7 +3,8 @@ name: Sort imports with isort
 on:
   pull_request:
     branches: [ master, development]
-
+  push:
+    branches: [ master, development ]
 
 jobs:
   format:
@@ -28,4 +29,4 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@v0.5.0
       with:
-        github_token: ${{ secrets.MLOPS_GEOMETRIC }}
+        github_token: ${{ secrets.GITHUB_TOKEN }}

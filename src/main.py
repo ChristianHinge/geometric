@@ -4,6 +4,8 @@ from datetime import datetime
 import configparser
 from src import settings
 
+from src.models import train_model
+
 class ArgumentParser:
     def __init__(self):
         parser = argparse.ArgumentParser(
@@ -40,12 +42,19 @@ class ArgumentParser:
 
         self.settings["AML"] = str(self.args.aml)
 
-    def run_train(self):
-        print("RUNNING TRAIN")
-        import src.models.train_model
-        #print(self.settings["Epochs"])
 
-    def run_test(self):
+    def run_train(self):
+        #uses self.settings
+        kwargs = {'lr':float(self.settings["LearningRate"]),
+        'epochs':int(self.settings["Epochs"]),
+        'batch_size':int(self.settings["BatchSize"]),
+        'p':float(self.settings["DropOutRate"]),
+        'layers':[int(layer_size) for layer_size in self.settings["Layers"].split(" ")],
+        'GPU':bool(self.settings["GPU"] == "True")}
+
+        train_model.train(**kwargs)
+
+    def run_eval(self):
         #uses self.settings
         pass
 

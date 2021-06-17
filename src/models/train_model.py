@@ -2,31 +2,32 @@ import pytorch_lightning as pl
 import wandb
 from pytorch_lightning.loggers import WandbLogger
 from src.models.model import GCN
-from src.data.make_dataset import get_mutag_data, get_dataloader
 from src.data.datamodule import MUTANGDataModule
+import os
 
-wandb.login(key='9bb7c1fffbc3ead322b0944221455e8deaaa7111')
-wandb_logger = WandbLogger(project="Geometric", entity='classy_geometric')
+def train(lr: float, epochs: float, batch_size: int,layers: int,GPU: bool,p: float):
 
+    # Initialise wandb logger
+    wandb.login(key=os.getenv('WANDB_KEY'))
+    wandb_logger = WandbLogger(project="Geometric", entity='classy_geometric')
 
-traindataset = get_mutag_data(train=True, cleaned=False)
-trainloader = get_dataloader(traindataset)
-testdataset = get_mutag_data(train=False, cleaned=False)
-testloader = get_dataloader(testdataset)
+    dm = MUTANGDataModule(batch_size=batch_size)
+    dataset = dm.prepare_data()
 
-dm = MUTANGDataModule(batch_size=64)
-dataset = dm.prepare_data()
+    model = GCN(dataset.num_node_features, dataset.num_classes,hidden_channels=layers,lr=lr,p=p)
 
-model = GCN(dataset.num_node_features, dataset.num_classes,lr=0.01,p=0.5)
+    if GPU:
+        kwargs = {'gpus':-1,'precision':16}
+    else:
+        kwargs = {'gpus':None,'precision':32}
 
-trainer = pl.Trainer(
-   logger=wandb_logger,    # W&B integration
-   # log_every_n_steps=50,   # set the logging frequency
-   # gpus=-1,                # use all GPUs
-   max_epochs=20,           # number of epochs
-   deterministic=False,     # keep it deterministic
-   )
+    trainer = pl.Trainer(
+    logger=wandb_logger,    # W&B integration
+    max_epochs=epochs,           # number of epochs
+    deterministic=True,     # keep it deterministic
+    **kwargs
+    )
 
-trainer.fit(model,dm)
+    trainer.fit(model,dm)
 
 
