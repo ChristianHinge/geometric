@@ -1,10 +1,7 @@
-
-
 from datetime import datetime
 from datetime import datetime
 from src import settings
-from src.models.train_model import train
-from src.models.test_model import eval
+from src.models import train_model, test_model
 import argparse
 import configparser
 import os
@@ -25,11 +22,14 @@ class ArgumentParser:
         parser.add_argument(
             '-mn', '--model_name', action='store', type=str, help='Model of name to test.',
         )
+        parser.add_argument(
+            '--aml',  action="store_true", help="Denoting wether on AML"
+        )
         
         self.args = parser.parse_args()
 
         self.config = configparser.ConfigParser()
-        print(settings.MODULE_PATH)
+
         if self.args.train:
             self.config.read(os.path.join(settings.MODULE_PATH,'src','config', 'train_config.ini'))
         elif self.args.test:
@@ -45,11 +45,13 @@ class ArgumentParser:
                 self.settings = self.config[self.args.config_section]
             else:
                 raise KeyError(f'Config {self.args.config_section} not found in configuration file')
-        else: 
+        else:
             self.settings = self.config["DEFAULT"]
 
         self.time_name = datetime.strftime(datetime.now(), '%d-%H:%M')
-        
+
+        self.settings["AML"] = str(self.args.aml)
+
 
     def run_train(self):
         #uses self.settings
@@ -62,7 +64,7 @@ class ArgumentParser:
         'name':str(self.time_name)
         }
 
-        train(**kwargs)
+        train_model.train(**kwargs)
 
     def run_eval(self):
 
@@ -75,14 +77,15 @@ class ArgumentParser:
         print(self.args.model_name)
 
 
-        eval(**kwargs)
+        test_model.eval(**kwargs)
         
 
 def main():
     argument_parser = ArgumentParser()
     if argument_parser.args.train:
         argument_parser.run_train()
-    elif argument_parser.args.test:
+
+    if argument_parser.args.test:
         argument_parser.run_eval()
 
 if __name__ == '__main__':
