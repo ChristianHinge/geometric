@@ -37,6 +37,7 @@ pandas==1.2.4
 pathspec==0.8.1
 Pillow==8.2.0
 pluggy==0.13.1
+psutil==5.8.0
 py==1.10.0
 pyasn1==0.4.8
 pycodestyle==2.7.0
@@ -59,6 +60,7 @@ six==1.16.0
 threadpoolctl==2.1.0
 toml==0.10.2
 torch==1.8.1
+torchserve==0.4.0
 tqdm==4.61.0
 typing-extensions==3.10.0.0
 urllib3==1.26.5
