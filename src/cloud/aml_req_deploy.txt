@@ -1,0 +1,10 @@
+azureml-sdk
+azureml-widgets
+azureml-defaults
+matplotlib
+seaborn
+torch
+torchvision
+wandb
+joblib
+python-dotenv
