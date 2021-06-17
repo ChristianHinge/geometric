@@ -32,8 +32,8 @@ RUN /opt/venv/bin/pip install torch-sparse
 RUN /opt/venv/bin/pip install torch-scatter 
 RUN /opt/venv/bin/pip install pytorch_lightning
 
-#COPY . /app
-#RUN /opt/venv/bin/pip install -e /app
+COPY . /app
+RUN /opt/venv/bin/pip install -e /app
 
 
-#CMD ["/opt/venv/bin/python","app/src/main.py","--train"]
+CMD ["/opt/venv/bin/python","app/src/main.py","--train"]

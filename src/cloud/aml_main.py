@@ -7,6 +7,10 @@ import argparse
 from src import settings
 import os
 
+from dotenv import load_dotenv, find_dotenv
+dotenv_path = find_dotenv()
+load_dotenv(dotenv_path)
+
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--train', '-t', dest='train', action='store_true', help='Train model')
@@ -18,7 +22,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 cfg = configparser.ConfigParser()
-cfg.read(os.path.join(settings.MODULE_PATH,'src','config', 'aml_config.ini'))
+cfg.read(os.path.join('src','config', 'aml_config.ini'))
 cfg = cfg["DEFAULT"]
 
 ws = Workspace.from_config("src/cloud/config.json")
@@ -32,6 +36,9 @@ env.docker.base_image = None
 env.docker.base_dockerfile = "src/cloud/Dockerfile"
 env.python.user_managed_dependencies=True
 env.python.interpreter_path = "/opt/venv/bin/python"
+env.environment_variables = {
+    "WANDB_KEY":os.getenv("WANDB_KEY")
+}
 
 #Arguments for main.py
 arguments = ["--aml"]

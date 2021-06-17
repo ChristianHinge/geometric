@@ -4,10 +4,14 @@ from pytorch_lightning.loggers import WandbLogger
 from src.models.model import GCN
 from src.data.datamodule import MUTANGDataModule
 import os
+from dotenv import load_dotenv, find_dotenv
 
 def train(lr: float, epochs: float, batch_size: int,layers: int,GPU: bool,p: float):
-
+    
+    dotenv_path = find_dotenv()
+    load_dotenv(dotenv_path)
     # Initialise wandb logger
+
     wandb.login(key=os.getenv('WANDB_KEY'))
     wandb_logger = WandbLogger(project="Geometric", entity='classy_geometric')
 
