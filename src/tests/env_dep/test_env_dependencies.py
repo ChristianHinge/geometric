@@ -29,5 +29,3 @@ def test_env():
     nono_list = [x for x in diff_list if x in reqs]
 
     assert len(nono_list) == 0
-
-a = test_env()
