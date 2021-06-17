@@ -17,11 +17,14 @@ class ArgumentParser:
         parser.add_argument(
             '-c', '--config_section', action="store",type=str, help="Name of the config section for overwriting default values"
         )
+        parser.add_argument(
+            '--aml',  action="store_true", help="Denoting wether on AML"
+        )
         
         self.args = parser.parse_args()
 
         self.config = configparser.ConfigParser()
-        print(settings.MODULE_PATH)
+
         if self.args.train:
             self.config.read(os.path.join(settings.MODULE_PATH,'src','config', 'train_config.ini'))
         elif self.args.test:
@@ -32,11 +35,14 @@ class ArgumentParser:
                 self.settings = self.config[self.args.config_section]
             else:
                 raise KeyError(f'Config {self.args.config_section} not found in configuration file')
+        else:
+            self.settings = self.config["DEFAULT"]
         
+        self.settings["AML"] = str(self.args.aml)
 
     def run_train(self):
         #uses self.settings
-        print(self.settings["LearningRate"])
+        print(self.settings["Epochs"])
         pass
 
     def run_eval(self):
@@ -47,6 +53,8 @@ def main():
     argument_parser = ArgumentParser()
     if argument_parser.args.train:
         argument_parser.run_train()
+    if argument_parser.args.test:
+        argument_parser.run_eval()
 
 if __name__ == '__main__':
     main()
