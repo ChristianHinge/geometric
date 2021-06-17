@@ -17,6 +17,9 @@ class ArgumentParser:
         parser.add_argument(
             '--test', '-v', dest='test', help='Test model from given path')
         parser.add_argument(
+            '--name','-n', dest='name', help='Name for model', type=str, default='no_name'
+        )
+        parser.add_argument(
             '-c', '--config_section', action="store",type=str, help="Name of the config section for overwriting default values"
         )
         
@@ -45,7 +48,8 @@ class ArgumentParser:
         'batch_size':int(self.settings["BatchSize"]),
         'p':float(self.settings["DropOutRate"]),
         'layers':[int(layer_size) for layer_size in self.settings["Layers"].split(" ")],
-        'GPU':bool(self.settings["GPU"] == "True")}
+        'GPU':bool(self.settings["GPU"] == "True"),
+        'name':str(self.args.name)}
 
         train(**kwargs)
 
