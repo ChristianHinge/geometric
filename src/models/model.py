@@ -1,5 +1,5 @@
 import torch
-from torch.nn import Linear, ModuleDict
+from torch.nn import Linear, ModuleList
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv
 from torch_geometric.nn import global_mean_pool
@@ -8,13 +8,14 @@ import pytorch_lightning.metrics.functional as FM
 
 from src.data.make_dataset import get_mutag_data, get_dataloader
 
+
 class GCN(pl.LightningModule):
     def __init__(
         self,
         input_num_features: int,
         num_classes: int,
-        hidden_channels: dict = {"conv1": 64, "conv2": 64, "conv3": 64},
-        lr: float=1e-3,
+        hidden_channels: list = [64, 64, 64],
+        lr: float = 1e-3,
         p: float = 0.5,
         seed: int = 12345,
     ):
@@ -24,7 +25,7 @@ class GCN(pl.LightningModule):
         self.p = p
         self.lr = lr
 
-        # initialize module here    
+        # initialize module here
         acc = pl.metrics.Accuracy()
         # use .clone so that each metric can maintain its own state
         self.train_acc = acc.clone()
@@ -32,10 +33,10 @@ class GCN(pl.LightningModule):
         self.val_acc = acc.clone()
         self.test_acc = acc.clone()
 
-        self.conv_layers = ModuleDict()
+        self.conv_layers = ModuleList()
         current_dim = input_num_features
-        for conv_name, hchannel in hidden_channels.items():
-            self.conv_layers[conv_name] = GCNConv(current_dim, hchannel)
+        for hchannel in hidden_channels:
+            self.conv_layers.append(GCNConv(current_dim, hchannel))
             current_dim = hchannel
 
         self.linear = Linear(current_dim, num_classes)
@@ -45,7 +46,7 @@ class GCN(pl.LightningModule):
 
     def forward(self, x, edge_index, batch):
         # 1. Obtain node embeddings
-        for layer in self.conv_layers.values():
+        for layer in self.conv_layers:
             x = F.relu(layer(x, edge_index))
 
         # 2. Readout layer
@@ -57,36 +58,36 @@ class GCN(pl.LightningModule):
 
         return x
 
-    def shared_step(self,batch,batch_idx):
+    def shared_step(self, batch, batch_idx):
 
-        outputs = self.forward(batch.x, batch.edge_index,batch.batch)
+        outputs = self.forward(batch.x, batch.edge_index, batch.batch)
         probs = F.softmax(outputs)
-        preds = torch.argmax(probs,dim=1)
+        preds = torch.argmax(probs, dim=1)
         loss = F.cross_entropy(outputs, batch.y)
 
         return loss, probs, batch.y
 
     def training_step(self, batch, batch_idx):
 
-        loss, probs, targets = self.shared_step(batch,batch_idx)
-        self.train_acc(probs,targets)
-        self.log('train/loss',loss,on_epoch=True)
-        self.log('train/accuracy', self.train_acc, on_epoch=True)
+        loss, probs, targets = self.shared_step(batch, batch_idx)
+        self.train_acc(probs, targets)
+        self.log("train/loss", loss, on_step=False, on_epoch=True)
+        self.log("train/accuracy", self.train_acc, on_step=False, on_epoch=True)
 
-        return loss
+        return {"loss": loss, "accuracy": self.train_acc}
 
     def validation_step(self, batch, batch_idx):
 
-        loss, probs, targets = self.shared_step(batch,batch_idx)
+        loss, probs, targets = self.shared_step(batch, batch_idx)
 
         self.val_acc(probs, targets)
 
-        self.log("validation/loss", loss,on_epoch=True)  
-        self.log('validation/accuracy', self.val_acc,on_epoch=True)
-        
+        self.log("validation/loss", loss, on_step=False, on_epoch=True)
+        self.log("validation/accuracy", self.val_acc, on_step=False, on_epoch=True)
+
     def test_step(self, batch, batch_idx):
 
-        loss, probs, targets = self.shared_step(batch,batch_idx)
+        loss, probs, targets = self.shared_step(batch, batch_idx)
         self.test_acc(probs, targets)
         self.log("test/loss", loss, on_step=False, on_epoch=True)
         self.log("test/accuracy", self.test_acc, on_step=False, on_epoch=True)
@@ -94,7 +95,6 @@ class GCN(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.lr)
 
-    
 
 if __name__ == "__main__":
     dataset = get_mutag_data(train=True, cleaned=False)

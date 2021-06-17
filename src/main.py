@@ -4,6 +4,8 @@ from datetime import datetime
 import configparser
 from src import settings
 
+from src.models.train_model import train
+
 class ArgumentParser:
     def __init__(self):
         parser = argparse.ArgumentParser(
@@ -32,16 +34,22 @@ class ArgumentParser:
                 self.settings = self.config[self.args.config_section]
             else:
                 raise KeyError(f'Config {self.args.config_section} not found in configuration file')
-        else:
-            self.settings = self.config['DEFAULT']
+        else: 
+            self.settings = self.config["DEFAULT"]
         
 
     def run_train(self):
         #uses self.settings
-        print(self.settings["LearningRate"])
-        pass
+        kwargs = {'lr':float(self.settings["LearningRate"]),
+        'epochs':int(self.settings["Epochs"]),
+        'batch_size':int(self.settings["BatchSize"]),
+        'p':float(self.settings["DropOutRate"]),
+        'layers':[int(layer_size) for layer_size in self.settings["Layers"].split(" ")],
+        'GPU':bool(self.settings["GPU"] == "True")}
 
-    def run_test(self):
+        train(**kwargs)
+
+    def run_eval(self):
         #uses self.settings
         pass
 
