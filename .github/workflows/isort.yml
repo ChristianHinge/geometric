@@ -3,7 +3,8 @@ name: Sort imports with isort
 on:
   pull_request:
     branches: [ master, development]
-
+  push:
+    branches: [ master, development ]
 
 jobs:
   format:
