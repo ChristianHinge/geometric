@@ -16,3 +16,4 @@ RUN /opt/venv/bin/pip install python-dotenv
 RUN /opt/venv/bin/pip install torch-geometric
 RUN /opt/venv/bin/pip install torch-sparse
 RUN /opt/venv/bin/pip install torch-scatter
+RUN /opt/venv/bin/pip install pytorch_lightning
