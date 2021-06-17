@@ -41,9 +41,9 @@ class ArgumentParser:
         self.settings["AML"] = str(self.args.aml)
 
     def run_train(self):
-        #uses self.settings
-        print(self.settings["Epochs"])
-        pass
+        print("RUNNING TRAIN")
+        import src.models.train_model
+        #print(self.settings["Epochs"])
 
     def run_test(self):
         #uses self.settings
