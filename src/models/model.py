@@ -1,10 +1,9 @@
+import pytorch_lightning as pl
 import torch
-from torch.nn import Linear, ModuleList
 import torch.nn.functional as F
+from torch.nn import Linear, ModuleList
 from torch_geometric.nn import GCNConv
 from torch_geometric.nn import global_mean_pool
-import pytorch_lightning as pl
-import pytorch_lightning.metrics.functional as FM
 
 from src.data.make_dataset import get_mutag_data, get_dataloader
 
@@ -19,6 +18,7 @@ class GCN(pl.LightningModule):
         p: float = 0.5,
         seed: int = 12345,
     ):
+
         super(GCN, self).__init__()
         torch.manual_seed(seed)
 
@@ -36,7 +36,7 @@ class GCN(pl.LightningModule):
         self.conv_layers = ModuleList()
         current_dim = input_num_features
         for hchannel in hidden_channels:
-            self.conv_layers.append(GCNConv(current_dim, hchannel))
+            self.conv_layers.append(GCNConv(current_dim, hchannel).jittable())
             current_dim = hchannel
 
         self.linear = Linear(current_dim, num_classes)
