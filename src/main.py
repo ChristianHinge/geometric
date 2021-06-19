@@ -1,7 +1,8 @@
 from datetime import datetime
 from datetime import datetime
 from src import settings
-from src.models import train_model, test_model
+from src.models import train_model
+from src.models import test_model
 import argparse
 import configparser
 import os
@@ -35,9 +36,9 @@ class ArgumentParser:
         elif self.args.test:
             self.config.read(os.path.join(settings.MODULE_PATH,'src','config','eval_config.ini'))
 
-            if self.args.model_name is None:
-                print("Need flag: -mn or --model_name {name of model}")
-                exit(1)
+            #if self.args.model_name is None:
+            #    print("Need flag: -mn or --model_name {name of model}")
+            #    exit(1)
 
 
         if self.args.config_section is not None:
@@ -70,13 +71,13 @@ class ArgumentParser:
 
         kwargs = {'project': str(self.settings['Project']),
                   'entity': str(self.settings['Entity']),
-                  'filename': self.args.model_name}
+                  'filename':str(self.settings['ModelName'])}
+                  
+                  #'filename': self.args.model_name}
 
-        print(self.settings['Project'])
-        print(self.settings['Entity'])
-        print(self.args.model_name)
-
-
+        print(kwargs)
+        #print(self.args.model_name)
+        
         test_model.eval(**kwargs)
         
 

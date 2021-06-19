@@ -76,6 +76,11 @@ class GCN(pl.LightningModule):
 
         return {"loss": loss, "accuracy": self.train_acc}
 
+    def predict_step(self, batch):
+        outputs = self.forward(batch.x, batch.edge_index, batch.batch)
+        probs = F.softmax(outputs,dim=1)
+        return probs
+
     def validation_step(self, batch, batch_idx):
 
         loss, probs, targets = self.shared_step(batch, batch_idx)
