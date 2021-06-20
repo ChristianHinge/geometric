@@ -59,7 +59,7 @@ class GCN(pl.LightningModule):
     def shared_step(self, batch, batch_idx):
 
         outputs = self.forward(batch.x, batch.edge_index, batch.batch)
-        probs = F.softmax(outputs)
+        probs = F.softmax(outputs,dim=1)
         preds = torch.argmax(probs, dim=1)
         loss = F.cross_entropy(outputs, batch.y)
 
