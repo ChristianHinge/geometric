@@ -1,3 +1,7 @@
+from azureml.core.authentication import (
+    AzureCliAuthentication,
+    InteractiveLoginAuthentication,
+)
 from azureml.core import Workspace
 from azureml.core import Environment
 from azureml.core import ScriptRunConfig
@@ -7,40 +11,59 @@ import argparse
 from src import settings
 import os
 
+
 from dotenv import load_dotenv, find_dotenv
+
 dotenv_path = find_dotenv()
 load_dotenv(dotenv_path)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
-    '--train', '-t', dest='train', action='store_true', help='Train model')
+    "--train", "-t", dest="train", action="store_true", help="Train model"
+)
+parser.add_argument("--test", "-v", dest="test", help="Test model from given path")
 parser.add_argument(
-    '--test', '-v', dest='test', help='Test model from given path')
-parser.add_argument(
-    '-c', '--config_section', action="store",type=str, help="Name of the config section for overwriting default values"
+    "-c",
+    "--config_section",
+    action="store",
+    type=str,
+    help="Name of the config section for overwriting default values",
 )
 
 args = parser.parse_args()
 cfg = configparser.ConfigParser()
-cfg.read(os.path.join('src','config', 'aml_config.ini'))
+cfg.read(os.path.join("src", "config", "aml_config.ini"))
 cfg = cfg["DEFAULT"]
 
-ws = Workspace.from_config("src/cloud/config.json")
+# cli_auth = AzureCliAuthentication()
+
+# ws = Workspace.from_config("src/cloud/config_tue.json")
+
+interactive_auth = InteractiveLoginAuthentication(
+    tenant_id="a3927f91-cda1-4696-af89-8c9f1ceffa91",
+    force=True
+)
+
+ws = Workspace(
+    subscription_id="0bbe0323-75ad-4ca0-a809-1d3f0ba7d909",
+    resource_group="Geometric-Group",
+    workspace_name="geometric-ws",
+    auth=interactive_auth,
+)
+
 compute_target = ws.compute_targets[cfg["ComputeTarget"]]
 
 
-#DOCKER
+# DOCKER
 env = Environment(name="geo-docker-train")
 env.docker.enabled = True
 env.docker.base_image = None
 env.docker.base_dockerfile = "src/cloud/Dockerfile"
-env.python.user_managed_dependencies=True
+env.python.user_managed_dependencies = True
 env.python.interpreter_path = "/opt/venv/bin/python"
-env.environment_variables = {
-    "WANDB_KEY":os.getenv("WANDB_KEY")
-}
+env.environment_variables = {"WANDB_KEY": os.getenv("WANDB_KEY")}
 
-#Arguments for main.py
+# Arguments for main.py
 arguments = ["--aml"]
 
 if args.train:
@@ -54,10 +77,10 @@ if args.config_section:
 
 config = ScriptRunConfig(
     environment=env,  # set the python environment
-    source_directory='.',
-    script='src/main.py',
-    compute_target = compute_target,
-    arguments = arguments
+    source_directory=".",
+    script="src/main.py",
+    compute_target=compute_target,
+    arguments=arguments,
 )
 
 exp = Experiment(ws, cfg["Experiment"])
