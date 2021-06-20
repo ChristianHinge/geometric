@@ -5,6 +5,7 @@ awscli==1.19.91
 Babel==2.9.1
 black==21.5b2
 botocore==1.20.91
+captum==0.3.1
 certifi==2021.5.30
 chardet==4.0.0
 click==8.0.1
@@ -13,6 +14,7 @@ cycler==0.10.0
 decorator==4.4.2
 docutils==0.15.2
 flake8==3.9.2
+future==0.18.2
 googledrivedownloader==0.4
 h5py==3.2.1
 idna==2.10
@@ -37,6 +39,7 @@ pandas==1.2.4
 pathspec==0.8.1
 Pillow==8.2.0
 pluggy==0.13.1
+psutil==5.8.0
 py==1.10.0
 pyasn1==0.4.8
 pycodestyle==2.7.0
@@ -55,11 +58,16 @@ rsa==4.7.2
 s3transfer==0.4.2
 scikit-learn==0.24.2
 scipy==1.6.3
+sentencepiece==0.1.95
 six==1.16.0
 # -e git+git@github.com:ChristianHinge/geometric.git@b93a5afabccc2f2ce3d02d954c793cad3d6f7c99#egg=src
 threadpoolctl==2.1.0
 toml==0.10.2
 torch==1.8.1
+torchaudio==0.8.1
+torchserve==0.4.0
+torchtext==0.9.1
+torchvision==0.9.1
 tqdm==4.61.0
 typing-extensions==3.10.0.0
 urllib3==1.26.5
