@@ -17,8 +17,11 @@ class ModelSaver:
         now = datetime.strftime(datetime.now(), '%Y-%m-%d_%H_%M_%S')
         return f'{now}.pth'
 
-    def save_model(self, model: Union[torch.nn.Module, pl.LightningModule]):
-        torch.save(model.state_dict(), os.path.join(MODELS_PATH, self.model_name))
+    def save_model(self, model: Union[torch.nn.Module, pl.LightningModule], model_path: str = ''):
+        torch.save(
+            model.state_dict(),
+            model_path if model_path else os.path.join(MODELS_PATH, self.model_name)
+        )
 
     @staticmethod
     def script_model(model: Union[torch.nn.Module, pl.LightningModule]):
