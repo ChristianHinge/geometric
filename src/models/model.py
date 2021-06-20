@@ -5,14 +5,12 @@ from torch.nn import Linear, ModuleList
 from torch_geometric.nn import GCNConv
 from torch_geometric.nn import global_mean_pool
 
-from src.data.make_dataset import get_mutag_data, get_dataloader
-
 
 class GCN(pl.LightningModule):
     def __init__(
         self,
-        input_num_features: int,
-        num_classes: int,
+        input_num_features: int = 7,
+        num_classes: int = 2,
         hidden_channels: list = [64, 64, 64],
         lr: float = 1e-3,
         p: float = 0.5,
@@ -36,7 +34,7 @@ class GCN(pl.LightningModule):
         self.conv_layers = ModuleList()
         current_dim = input_num_features
         for hchannel in hidden_channels:
-            self.conv_layers.append(GCNConv(current_dim, hchannel).jittable())
+            self.conv_layers.append(GCNConv(current_dim, hchannel))
             current_dim = hchannel
 
         self.linear = Linear(current_dim, num_classes)
@@ -77,7 +75,6 @@ class GCN(pl.LightningModule):
         return {"loss": loss, "accuracy": self.train_acc}
 
     def validation_step(self, batch, batch_idx):
-
         loss, probs, targets = self.shared_step(batch, batch_idx)
 
         self.val_acc(probs, targets)
@@ -94,14 +91,3 @@ class GCN(pl.LightningModule):
 
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.lr)
-
-
-if __name__ == "__main__":
-    dataset = get_mutag_data(train=True, cleaned=False)
-    trainloader = get_dataloader(dataset)
-
-    data = next(iter(trainloader))
-
-    model = GCN(dataset.num_node_features, dataset.num_classes)
-    model.train()
-    out = model(data.x, data.edge_index, data.batch)
