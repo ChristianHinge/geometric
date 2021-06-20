@@ -107,3 +107,7 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+# TorchServe
+model_store
+logs
