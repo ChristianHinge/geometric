@@ -12,4 +12,4 @@ jobs:
           python-version: 3.8
       - uses: jamescurtin/isort-action@master
         with:
-          requirementsFiles: "requirements.txt requirements-geometric.txt"
+          requirementsFiles: "requirements.txt"
