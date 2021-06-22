@@ -29,23 +29,35 @@ parser.add_argument(
     type=str,
     help="Name of the config section for overwriting default values",
 )
+parser.add_argument(
+    "-aml_c",
+    "--aml_config_section",
+    action="store",
+    type=str,
+    help="Name of the config section for overwriting default azure run",
+)
 
 args = parser.parse_args()
 cfg = configparser.ConfigParser()
 cfg.read(os.path.join("src", "config", "aml_config.ini"))
-cfg = cfg["DEFAULT"]
 
-# cli_auth = AzureCliAuthentication()
+if args.aml_config_section is not None:
+    cfg = cfg[args.aml_config_section] 
+else:
+    cfg = cfg["DEFAULT"]
 
-ws = Workspace.from_config("src/cloud/config_tue.json")
+
+ws = Workspace.from_config(os.path.join(settings.CLOUD_PATH,"config.json"))
+
+## Uncomment all below if you are not able to access workspace ##
 
 #interactive_auth = InteractiveLoginAuthentication(
-#    tenant_id="a3927f91-cda1-4696-af89-8c9f1ceffa91",
+#    tenant_id="your tenant id",
 #    force=True
 #)
 
 #ws = Workspace(
-#    subscription_id="0bbe0323-75ad-4ca0-a809-1d3f0ba7d909",
+#    subscription_id="",
 #    resource_group="Geometric-Group",
 #    workspace_name="geometric-ws",
 #    auth=interactive_auth,
@@ -53,7 +65,8 @@ ws = Workspace.from_config("src/cloud/config_tue.json")
 
 compute_target = ws.compute_targets[cfg["ComputeTarget"]]
 
-compute_target.start(wait_for_completion=True,show_output=True)
+# start compute target
+# compute_target.start(wait_for_completion=True,show_output=True)
 
 # DOCKER
 env = Environment(name="geo-docker-train")

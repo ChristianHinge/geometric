@@ -23,7 +23,7 @@ class ArgumentParser:
             '-mn', '--model_name', action='store', type=str, help='Model of name to test.',
         )
         parser.add_argument(
-            '--aml',  action="store_true", help="Denoting wether on AML"
+            '--aml',  action="store_true", help="Denoting whether on AML"
         )
         
         self.args = parser.parse_args()
@@ -48,7 +48,7 @@ class ArgumentParser:
         else:
             self.settings = self.config["DEFAULT"]
 
-        self.time_name = datetime.strftime(datetime.now(), '%d-%H:%M')
+        self.time_name = datetime.strftime(datetime.now(), '%d-%H-%M')
 
         self.settings["AML"] = str(self.args.aml)
 
@@ -60,8 +60,9 @@ class ArgumentParser:
         'batch_size':int(self.settings["BatchSize"]),
         'p':float(self.settings["DropOutRate"]),
         'layers':[int(layer_size) for layer_size in self.settings["Layers"].split(" ")],
-        'GPU':bool(self.settings["GPU"] == "True"),
-        'name':str(self.time_name)
+        'GPU':bool(self.settings["GPU"] == "True"), # match choice of compute instance to gpu if running on azure
+        'name':str(self.time_name),
+        'azure': self.args.aml
         }
 
         train_model.train(**kwargs)
