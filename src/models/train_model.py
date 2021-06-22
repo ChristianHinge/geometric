@@ -1,22 +1,23 @@
+import os
+
 import pytorch_lightning as pl
 import wandb
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import ModelCheckpoint
-from src.models.model import GCN
-from src.data.datamodule import MUTANGDataModule
-from src.settings import CHECKPOINT_PATH
-import os
 from dotenv import load_dotenv, find_dotenv
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import WandbLogger
 
+from src.data.datamodule import MUTANGDataModule
+from src.models.model import GCN
+from src.settings.paths import CHECKPOINT_PATH
 
 
 def train(
     lr: float,
-    epochs: float,
+    epochs: int,
     batch_size: int,
-    layers: int,
+    layers: list,
     GPU: bool,
-    p: float,
+    dropout_rate: float,
     name: str,
     azure: bool,
 ):
@@ -44,7 +45,7 @@ def train(
         dataset.num_classes,
         hidden_channels=layers,
         lr=lr,
-        p=p,
+        p=dropout_rate,
     )
 
     filename = f"{name}"
