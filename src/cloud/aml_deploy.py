@@ -16,7 +16,7 @@ print(model.name, 'version', model.version)
 # Set path for scoring script
 script_file = os.path.join("src/cloud/score.py")
 
-#DOCKER
+#DOCKER 
 #env = Environment.from_pip_requirements("test_env","src/cloud/req_test.txt")
 env = Environment("test")
 env.docker.enabled = True
@@ -36,10 +36,10 @@ env.python.user_managed_dependencies=True
 inference_config = InferenceConfig(entry_script=script_file,
                                    environment=env)
 
-#deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
-deployment_config = LocalWebservice.deploy_configuration(port=6790)
+deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
+#deployment_config = LocalWebservice.deploy_configuration(port=6790)
 
-service_name = "geo-service4"
+service_name = "geo-service6"
 service = Model.deploy(ws, service_name, [model], inference_config, deployment_config)
 
 print("hey")
