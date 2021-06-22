@@ -39,7 +39,7 @@ inference_config = InferenceConfig(entry_script=script_file,
 deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
 #deployment_config = LocalWebservice.deploy_configuration(port=6790)
 
-service_name = "geo-service6"
+service_name = "geo-service8"
 service = Model.deploy(ws, service_name, [model], inference_config, deployment_config)
 
 print("hey")
