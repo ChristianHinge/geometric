@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytorch_lightning as pl
@@ -21,6 +22,7 @@ def train(
     name: str,
     azure: bool,
 ):
+    log = logging.getLogger(__name__)
 
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
@@ -81,7 +83,7 @@ def train(
     os.rename(best_path, new_path_name)
 
     if azure:
-        print(f'-- Registring model in azure workspace -- ')
+        log.info('-- Registring model in azure workspace --')
 
         run.upload_file(name=os.path.join("outputs", model_name), path_or_stream=os.path.join(CHECKPOINT_PATH,model_name))
 

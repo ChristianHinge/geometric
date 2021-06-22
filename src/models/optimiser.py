@@ -1,3 +1,4 @@
+import logging
 import os
 
 import pytorch_lightning as pl
@@ -19,6 +20,7 @@ class Optimiser:
 
     @staticmethod
     def train():
+        log = logging.getLogger(__name__)
         with wandb.init():
             wandb_logger = WandbLogger(project="geometric_hyp_opt", entity="classy_geometric")
 
@@ -32,8 +34,9 @@ class Optimiser:
                 lr=wandb.config.lr,
                 p=wandb.config.p
             )
-            print(model)
-            print(wandb.config.layers)
+            log.debug('Model structure:')
+            log.debug(model)
+            log.info(wandb.config.layers)
 
             if wandb.config.GPU:
                 kwargs = {"gpus": -1, "precision": 16}
