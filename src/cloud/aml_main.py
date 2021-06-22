@@ -37,22 +37,23 @@ cfg = cfg["DEFAULT"]
 
 # cli_auth = AzureCliAuthentication()
 
-# ws = Workspace.from_config("src/cloud/config_tue.json")
+ws = Workspace.from_config("src/cloud/config_tue.json")
 
-interactive_auth = InteractiveLoginAuthentication(
-    tenant_id="a3927f91-cda1-4696-af89-8c9f1ceffa91",
-    force=True
-)
+#interactive_auth = InteractiveLoginAuthentication(
+#    tenant_id="a3927f91-cda1-4696-af89-8c9f1ceffa91",
+#    force=True
+#)
 
-ws = Workspace(
-    subscription_id="0bbe0323-75ad-4ca0-a809-1d3f0ba7d909",
-    resource_group="Geometric-Group",
-    workspace_name="geometric-ws",
-    auth=interactive_auth,
-)
+#ws = Workspace(
+#    subscription_id="0bbe0323-75ad-4ca0-a809-1d3f0ba7d909",
+#    resource_group="Geometric-Group",
+#    workspace_name="geometric-ws",
+#    auth=interactive_auth,
+#)
 
 compute_target = ws.compute_targets[cfg["ComputeTarget"]]
 
+compute_target.start(wait_for_completion=True,show_output=True)
 
 # DOCKER
 env = Environment(name="geo-docker-train")
@@ -86,3 +87,7 @@ config = ScriptRunConfig(
 exp = Experiment(ws, cfg["Experiment"])
 run = exp.submit(config)
 print(run.get_portal_url())
+
+# Wait until trial is done to stop compute target
+run.wait_for_completion()
+compute_target.stop(wait_for_completion=True, show_output=True)
