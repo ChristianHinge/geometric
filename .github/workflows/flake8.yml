@@ -5,20 +5,19 @@ on:
     branches: [ master, development ]
 
 jobs:
-  flake8_py3:
+  lint:
+    name: Python Lint
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          python-version: 3.8
-      - name: Checkout PyTorch
-        uses: actions/checkout@master
-      - name: Install flake8
-        run: pip install flake8
+          python-version: "3.8"
       - name: Run flake8
-        uses: suo/flake8-github-action@releases/v1
+        uses: julianwachholz/flake8-action@v2
         with:
-          checkName: 'flake8_py3'
+          checkName: "Python Lint"
+          path: src
+#           config: path/to/flake8.ini
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
