@@ -2,9 +2,12 @@ from datetime import datetime
 from datetime import datetime
 from src import settings
 from src.models import train_model, test_model
+from src.models.wandb_hyp_sweep import hyp_opt_iter
+from src.models.hyp_opt_config import sweep_config
 import argparse
 import configparser
 import os
+import wandb
 
 class ArgumentParser:
     def __init__(self):
@@ -16,6 +19,8 @@ class ArgumentParser:
             '--train', '-t', dest='train', action='store_true', help='Train model')
         parser.add_argument(
             '--test', '-v', dest='test', action='store_true', help='Test model by giving name')
+        parser.add_argument(
+            '--hyp_opt', '-ho', dest='hyp_opt', type=int, help='Do hyperparameter optimization with sweep_config file')    
         parser.add_argument(
             '-c', '--config_section', action="store",type=str, help="Name of the config section for overwriting default values"
         )
@@ -78,6 +83,11 @@ class ArgumentParser:
 
 
         test_model.eval(**kwargs)
+    
+    def run_hyp_opt(self,counts):
+        wandb.login(key=os.getenv("WANDB_KEY"))
+        sweep_id = wandb.sweep(sweep_config, project="geometric_hyp_opt", entity="classy_geometric")
+        wandb.agent(sweep_id, function=hyp_opt_iter, count=counts,project="geometric_hyp_opt", entity="classy_geometric")
         
 
 def main():
@@ -87,6 +97,9 @@ def main():
 
     if argument_parser.args.test:
         argument_parser.run_eval()
+    
+    if argument_parser.args.hyp_opt:
+        argument_parser.run_hyp_opt(argument_parser.args.hyp_opt)
 
 if __name__ == '__main__':
     main()
