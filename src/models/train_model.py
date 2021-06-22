@@ -9,6 +9,7 @@ import os
 from dotenv import load_dotenv, find_dotenv
 
 
+
 def train(
     lr: float,
     epochs: float,
@@ -17,10 +18,17 @@ def train(
     GPU: bool,
     p: float,
     name: str,
+    azure: bool,
 ):
 
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
+
+    if azure:
+        from azureml.core import Run
+
+        run = Run.get_context()
+
 
     # Initialise wandb logger
     wandb.login(key=os.getenv("WANDB_KEY"))
@@ -66,6 +74,19 @@ def train(
     # Append wandb run ID to name in order for continue test logging if needed
     best_path = checkpoint_callback.best_model_path
     version = wandb_logger.version
-    new_path_name = os.path.join(CHECKPOINT_PATH, filename + "_" + version + ".ckpt")
+    model_name = filename + "_" + version + ".ckpt"
+    new_path_name = os.path.join(CHECKPOINT_PATH, model_name)
 
     os.rename(best_path, new_path_name)
+
+    if azure:
+        print(f'-- Registring model in azure workspace -- ')
+
+        run.upload_file(name=os.path.join("outputs", model_name), path_or_stream=os.path.join(CHECKPOINT_PATH,model_name))
+
+        run.register_model(
+            model_path=os.path.join("outputs",model_name),
+            model_name=model_name,
+            tags={"Training context": "Training of GNN model"},
+            properties={},
+        )
