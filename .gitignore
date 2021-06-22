@@ -112,3 +112,6 @@ target/
 # TorchServe
 model_store
 logs
+
+# Hydra
+src/outputs/
