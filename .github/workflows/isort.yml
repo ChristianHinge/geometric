@@ -1,6 +1,7 @@
 name: Run isort
 on:
-  - push
+  pull_request:
+    branches: [ master, development ]
 
 jobs:
   build:
