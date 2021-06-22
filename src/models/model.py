@@ -92,6 +92,11 @@ class GCN(pl.LightningModule):
         self.log("test/loss", loss, on_step=False, on_epoch=True)
         self.log("test/accuracy", self.test_acc, on_step=False, on_epoch=True)
 
+    def predict_step(self, batch):
+        outputs = self.forward(batch.x, batch.edge_index, batch.batch)
+        probs = F.softmax(outputs,dim=1)
+        return probs
+
     def configure_optimizers(self):
         return torch.optim.Adam(self.parameters(), lr=self.lr)
 
