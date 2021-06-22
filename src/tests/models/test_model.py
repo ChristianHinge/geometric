@@ -45,3 +45,18 @@ class TestGCN:
 
         with pytest.raises(IndexError):
             model.forward(data.x, data.edge_index, data.batch)
+
+
+    def test_shared_step_probs_and_y(self, model):
+        x = torch.zeros([1, 2])
+        edge_index = torch.zeros([2, 2], dtype=torch.long)
+        batch = torch.zeros([1, 1], dtype=torch.int64)
+        data = Batch(x=x, edge_index=edge_index, batch=batch, y=torch.zeros([1],dtype=torch.long))
+        batch_idx = 0
+        loss, probs, y = model.shared_step(data,batch_idx)
+
+        assert 0.999 <= torch.sum(probs).item() <= 1.0001
+        assert y.shape[0] == 1
+        #assert y in [0,1]
+        #test bigger batch size
+
