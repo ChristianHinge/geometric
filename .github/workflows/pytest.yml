@@ -29,10 +29,6 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-<<<<<<< HEAD
-	        pip install torch
-=======
->>>>>>> 811eed44b5bfe76d3b05177417f08e024a83d318
           pip install -r requirements.txt
           pip install -r requirements-geometric.txt
 

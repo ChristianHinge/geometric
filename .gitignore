@@ -99,5 +99,15 @@ target/
 # wandb logs
 *wandb
 
+# Model formats
+*.pth
+*.ckpt
+*hparams*
+*events*
+
 # Mypy cache
 .mypy_cache/
+
+# TorchServe
+model_store
+logs

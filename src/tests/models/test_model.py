@@ -13,12 +13,12 @@ def model():
 class TestGCN:
 
     def test_model_structure(self, model):
-        assert model.conv_layers.conv1.in_channels == 2
-        assert model.conv_layers.conv1.out_channels == 64
-        assert model.conv_layers.conv2.in_channels == 64
-        assert model.conv_layers.conv2.out_channels == 64
-        assert model.conv_layers.conv3.in_channels == 64
-        assert model.conv_layers.conv3.out_channels == 64
+        assert model.conv_layers[0].in_channels == 2
+        assert model.conv_layers[0].out_channels == 64
+        assert model.conv_layers[1].in_channels == 64
+        assert model.conv_layers[1].out_channels == 64
+        assert model.conv_layers[2].in_channels == 64
+        assert model.conv_layers[2].out_channels == 64
         assert model.linear.in_features == 64
         assert model.linear.out_features == 2
 
