@@ -38,7 +38,9 @@ env.python.user_managed_dependencies=True
 env.environment_variables = {
     "WANDB_KEY":os.getenv("WANDB_KEY")
 }
-
+print("======================")
+print(os.getenv("WANDB_KEY"))
+print("=======================")
 #Arguments for main.py
 arguments = ["--aml"]
 
@@ -56,7 +58,7 @@ config = ScriptRunConfig(
     source_directory='.',
     script='src/main.py',
     compute_target = compute_target,
-    arguments = arguments
+    arguments = ["--aml","--train"]
 )
 
 exp = Experiment(ws, cfg["Experiment"])

@@ -1,5 +1,5 @@
 #FROM mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04
-FROM mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.0-cudnn7-ubuntu18.04
+FROM mcr.microsoft.com/azureml/openmpi3.1.2-cuda10.2-cudnn7-ubuntu18.04
 ARG CONDA_VERSION=4.8.3
 ARG PYTHON_VERSION=3.8
 ARG AZUREML_SDK_VERSION=1.30.0
@@ -33,7 +33,7 @@ RUN conda install -y conda=${CONDA_VERSION} python=${PYTHON_VERSION} && \
 
 RUN pip install --upgrade pip
 RUN pip install wheel
-RUN pip install torch==1.9.0+cu100
+RUN pip install install torch==1.8.1+cu102 torchvision==0.9.1+cu102 torchaudio===0.8.1 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
 RUN pip install azureml-core
 RUN pip install azureml-widgets
 RUN pip install azureml-defaults
@@ -43,13 +43,14 @@ RUN pip install torchvision
 RUN pip install wandb
 RUN pip install joblib
 RUN pip install python-dotenv
-RUN pip install torch-geometric -f https://pytorch-geometric.com/whl/torch-1.9.0+cu100.html
+RUN pip install pytorch_lightning
 
 #RUN apt-get install gcc-5 g++-5
 #RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 60 --slave /usr/bin/g++ g++ /usr/bin/g++-5
-RUN pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.9.0+cu100.html
-RUN pip install torch-scatter 
-RUN pip install pytorch_lightning
+RUN pip install torch-scatter -f https://pytorch-geometric.com/whl/torch-1.8.1+cu102.html
+RUN pip install torch-sparse -f https://pytorch-geometric.com/whl/torch-1.8.1+cu102.html
+RUN pip install torch-cluster -f https://pytorch-geometric.com/whl/torch-1.8.1+cu102.html
+RUN pip install torch-geometric -f https://pytorch-geometric.com/whl/torch-1.8.1+cu102.html
 #RUN pip install -e git+https://github.com/ChristianHinge/geometric@feature/azure_train#egg=src
 RUN conda clean -aqy && \
     rm -rf ~/miniconda/pkgs && \

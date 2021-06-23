@@ -21,7 +21,7 @@ script_file = os.path.join("src/cloud/score.py")
 env = Environment("test")
 env.docker.enabled = True
 env.docker.base_image = None
-env.docker.base_dockerfile = "src/cloud/Dockerfile.3"
+env.docker.base_dockerfile = "src/cloud/Dockerfile.train"
 env.python.user_managed_dependencies=True
 
 #
