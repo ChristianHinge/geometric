@@ -1,25 +1,28 @@
+import logging
+import os
+
 import pytorch_lightning as pl
 import wandb
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import ModelCheckpoint
-from src.models.model import GCN
-from src.data.datamodule import MUTANGDataModule
-from src.settings import CHECKPOINT_PATH
-import os
 from dotenv import load_dotenv, find_dotenv
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import WandbLogger
 
+from src.data.datamodule import MUTANGDataModule
+from src.models.model import GCN
+from src.settings.paths import CHECKPOINT_PATH
 
 
 def train(
     lr: float,
-    epochs: float,
+    epochs: int,
     batch_size: int,
-    layers: int,
-    GPU: bool,
-    p: float,
+    layers: list,
+    gpu: bool,
+    dropout_rate: float,
     name: str,
     azure: bool,
 ):
+    log = logging.getLogger(__name__)
 
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
@@ -44,7 +47,7 @@ def train(
         dataset.num_classes,
         hidden_channels=layers,
         lr=lr,
-        p=p,
+        p=dropout_rate,
     )
 
     filename = f"{name}"
@@ -56,7 +59,7 @@ def train(
         mode="max",
     )
 
-    if GPU:
+    if gpu:
         kwargs = {"gpus": -1, "precision": 16}
     else:
         kwargs = {"gpus": None, "precision": 32}
@@ -80,7 +83,7 @@ def train(
     os.rename(best_path, new_path_name)
 
     if azure:
-        print(f'-- Registring model in azure workspace -- ')
+        log.info('-- Registring model in azure workspace --')
 
         run.upload_file(name=os.path.join("outputs", model_name), path_or_stream=os.path.join(CHECKPOINT_PATH,model_name))
 

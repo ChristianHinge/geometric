@@ -1,0 +1,6 @@
+seed: 42
+defaults:
+#  - train: cpu
+#  - evaluate: wandb
+  - optimise: wandb
+#  - aml: cpu

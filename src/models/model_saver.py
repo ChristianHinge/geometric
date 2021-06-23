@@ -5,7 +5,7 @@ from typing import Union
 import pytorch_lightning as pl
 import torch
 
-from src.settings import MODEL_STORE_PATH, MODELS_PATH
+from src.settings.paths import MODEL_STORE_PATH, MODELS_PATH
 
 
 class ModelSaver:
