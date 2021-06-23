@@ -1,10 +1,9 @@
 import torch
 import torch.nn.functional as F
 from torch.nn import Linear, ModuleDict
-from torch_geometric.nn import GCNConv
-from torch_geometric.nn import global_mean_pool
+from torch_geometric.nn import GCNConv, global_mean_pool
 
-from src.data.make_dataset import get_mutag_data, get_dataloader
+from src.data.make_dataset import get_dataloader, get_mutag_data
 
 
 class GCN(torch.nn.Module):

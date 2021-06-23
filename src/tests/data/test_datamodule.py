@@ -15,7 +15,9 @@ def test_split_list():
 
 
 def test_data_split():
-    assert len(dm1.full_set) == len(dm1.train_set) + len(dm1.val_set) + len(dm1.test_set)
+    assert len(dm1.full_set) == len(dm1.train_set) + len(dm1.val_set) + len(
+        dm1.test_set
+    )
 
 
 def test_dataloader_test_set():
@@ -35,7 +37,11 @@ def test_test_set():
     assert len(dm1.test_set) == len(dm2.test_set)
 
     for ii in range(len(dm1.test_set)):
-        assert torch.all(torch.eq(dm1.test_set[ii].edge_attr, dm2.test_set[ii].edge_attr))
-        assert torch.all(torch.eq(dm1.test_set[ii].edge_index, dm2.test_set[ii].edge_index))
+        assert torch.all(
+            torch.eq(dm1.test_set[ii].edge_attr, dm2.test_set[ii].edge_attr)
+        )
+        assert torch.all(
+            torch.eq(dm1.test_set[ii].edge_index, dm2.test_set[ii].edge_index)
+        )
         assert torch.all(torch.eq(dm1.test_set[ii].x, dm2.test_set[ii].x))
         assert torch.all(torch.eq(dm1.test_set[ii].y, dm2.test_set[ii].y))

@@ -3,11 +3,11 @@ import os
 
 import pytorch_lightning as pl
 import torch
-import wandb
-from dotenv import load_dotenv, find_dotenv
+from dotenv import find_dotenv, load_dotenv
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 
+import wandb
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
 from src.settings.paths import CHECKPOINT_PATH
@@ -80,14 +80,16 @@ def train(
     os.rename(best_path, new_path_name)
 
     if azure:
-        log.info('-- Registering model in azure workspace --')
+        log.info("-- Registering model in azure workspace --")
 
         from azureml.core import Run
 
         run = Run.get_context()
 
-        run.upload_file(name=os.path.join("outputs", model_name),
-                        path_or_stream=os.path.join(CHECKPOINT_PATH, model_name))
+        run.upload_file(
+            name=os.path.join("outputs", model_name),
+            path_or_stream=os.path.join(CHECKPOINT_PATH, model_name),
+        )
 
         run.register_model(
             model_path=os.path.join("outputs", model_name),

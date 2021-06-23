@@ -4,7 +4,6 @@ from ts.torch_handler.base_handler import BaseHandler
 
 
 class ModelHandler(BaseHandler):
-
     def __init__(self):
         super().__init__()
 
@@ -13,14 +12,14 @@ class ModelHandler(BaseHandler):
         if preprocessed_data is None:
             preprocessed_data = data[0].get("body")
 
-        x = [list(map(int, i)) for i in preprocessed_data['x']]
-        edge_index = [list(map(int, i)) for i in preprocessed_data['edge_index']]
-        batch = list(map(int, preprocessed_data['batch']))
+        x = [list(map(int, i)) for i in preprocessed_data["x"]]
+        edge_index = [list(map(int, i)) for i in preprocessed_data["edge_index"]]
+        batch = list(map(int, preprocessed_data["batch"]))
 
         x, edge_index, batch = (
             torch.as_tensor(x).type(torch.FloatTensor),
             torch.as_tensor(edge_index),
-            torch.as_tensor(batch)
+            torch.as_tensor(batch),
         )
 
         return x, edge_index, batch

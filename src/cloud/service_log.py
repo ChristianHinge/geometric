@@ -8,5 +8,5 @@ print(ws.webservices)
 
 from azureml.core import Webservice
 
-service = Webservice(ws, 'geo-service2')
+service = Webservice(ws, "geo-service2")
 print(service.get_logs())
