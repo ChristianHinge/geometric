@@ -1,0 +1,3 @@
+aml:
+  compute_target: geo-cpu
+  experiment: exp-cpu

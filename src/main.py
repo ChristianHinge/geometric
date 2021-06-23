@@ -25,6 +25,7 @@ def run_optimise(cfg: DictConfig, seed):
 @hydra.main(config_path='config', config_name='run_mode')
 def main(cfg: DictConfig):
     seed = cfg['seed']
+    cfg = cfg['mode']
 
     if 'train' in cfg:
         run_train(cfg['train'], seed)
