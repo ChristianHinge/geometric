@@ -17,7 +17,7 @@ def train(
     epochs: int,
     batch_size: int,
     layers: list,
-    GPU: bool,
+    gpu: bool,
     dropout_rate: float,
     name: str,
     azure: bool,
@@ -59,7 +59,7 @@ def train(
         mode="max",
     )
 
-    if GPU:
+    if gpu:
         kwargs = {"gpus": -1, "precision": 16}
     else:
         kwargs = {"gpus": None, "precision": 32}
