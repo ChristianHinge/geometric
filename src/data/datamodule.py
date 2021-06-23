@@ -1,5 +1,4 @@
 import pytorch_lightning as pl
-import torch
 from torch.utils.data import random_split
 from torch_geometric import datasets
 from torch_geometric.data import DataLoader
@@ -33,7 +32,6 @@ class MUTANGDataModule(pl.LightningDataModule):
         )
 
     def setup(self, stage: str = None):
-        torch.manual_seed(0)
         self.full_set = datasets.TUDataset(
             root=CLEANED_DATA_PATH if self.cleaned else NOTCLEANED_DATA_PATH,
             name="MUTAG",
