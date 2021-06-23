@@ -1,4 +1,5 @@
 import pytorch_lightning as pl
+import torch
 from torch.utils.data import random_split
 from torch_geometric import datasets
 from torch_geometric.data import DataLoader
@@ -9,7 +10,7 @@ from src.settings.paths import CLEANED_DATA_PATH, NOT_CLEANED_DATA_PATH
 class MUTANGDataModule(pl.LightningDataModule):
     def __init__(
         self, batch_size: int = 32, cleaned: bool = False, split=None,
-        num_workers: int = 0
+        num_workers: int = 0, seed: int = 0
     ):
         super().__init__()
         if split is None:
@@ -21,6 +22,7 @@ class MUTANGDataModule(pl.LightningDataModule):
         self.val_set = None
         self.cleaned = cleaned
         self.num_workers = num_workers
+        self.seed = seed
 
         if sum(self.split) != 1:
             raise ValueError('Expected split list to sum to 1')
@@ -34,6 +36,7 @@ class MUTANGDataModule(pl.LightningDataModule):
         )
 
     def setup(self, stage: str = None):
+        torch.manual_seed(self.seed)
         self.full_set = datasets.TUDataset(
             root=CLEANED_DATA_PATH if self.cleaned else NOT_CLEANED_DATA_PATH,
             name="MUTAG",

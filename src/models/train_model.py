@@ -2,6 +2,7 @@ import logging
 import os
 
 import pytorch_lightning as pl
+import torch
 import wandb
 from dotenv import load_dotenv, find_dotenv
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -13,6 +14,7 @@ from src.settings.paths import CHECKPOINT_PATH
 
 
 def train(
+    seed: int,
     lr: float,
     epochs: int,
     batch_size: int,
@@ -33,9 +35,10 @@ def train(
         name=name, project="Geometric", entity="classy_geometric"
     )
 
-    dm = MUTANGDataModule(batch_size=batch_size)
+    dm = MUTANGDataModule(batch_size=batch_size, seed=seed)
     dataset = dm.prepare_data()
 
+    torch.manual_seed(seed)
     model = GCN(
         dataset.num_node_features,
         dataset.num_classes,

@@ -10,7 +10,7 @@ from src.models.model import GCN
 from src.settings.paths import CHECKPOINT_PATH, CLOUD_PATH
 
 
-def eval(project: str, filename: str, entity: str, azure_stored: bool):
+def eval(seed: int, project: str, filename: str, entity: str, azure_stored: bool):
     wandb.login(key=os.getenv("WANDB_KEY"))
 
     run_name = filename.split('_')[0]
@@ -24,9 +24,10 @@ def eval(project: str, filename: str, entity: str, azure_stored: bool):
 
         model.download(CHECKPOINT_PATH, exist_ok=True)
     test_path = os.path.join(CHECKPOINT_PATH, filename)
+
     model = GCN.load_from_checkpoint(test_path)
 
-    dm = MUTANGDataModule(batch_size=64)
+    dm = MUTANGDataModule(batch_size=64, seed=seed)
 
     trainer = pl.Trainer(logger=wandlogger)
     trainer.test(model, datamodule=dm)
@@ -34,5 +35,6 @@ def eval(project: str, filename: str, entity: str, azure_stored: bool):
 
 if __name__ == '__main__':
 
-    eval(project='Geometric', filename='22-10-12_190dze4r.ckpt', entity='classy_geometric',
+    eval(seed=42, project='Geometric', filename='22-10-12_190dze4r.ckpt',
+         entity='classy_geometric',
          azure_stored=True)
