@@ -1,0 +1,1 @@
+FROM mcr.microsoft.com/azureml/<image_name>:<tag>
