@@ -28,14 +28,13 @@ cfg = cfg["DEFAULT"]
 ws = Workspace.from_config("src/cloud/config.json")
 compute_target = ws.compute_targets[cfg["ComputeTarget"]]
 
-
 #DOCKER
 env = Environment(name="geo-docker-train")
 env.docker.enabled = True
 env.docker.base_image = None
-env.docker.base_dockerfile = "src/cloud/Dockerfile"
+env.docker.base_dockerfile = "src/cloud/Dockerfile.train"
 env.python.user_managed_dependencies=True
-env.python.interpreter_path = "/opt/venv/bin/python"
+#env.python.interpreter_path = "/opt/venv/bin/python"
 env.environment_variables = {
     "WANDB_KEY":os.getenv("WANDB_KEY")
 }

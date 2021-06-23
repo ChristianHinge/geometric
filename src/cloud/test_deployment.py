@@ -55,7 +55,6 @@ data = json.dumps({"x":x,"edge_index":edge_index,"edge_attr":edge_attr})
 headers = { 'Content-Type':'application/json' }
 
 url = "http://403ebb0f-df23-4acf-beea-460d36559ac4.northeurope.azurecontainer.io/score"
-#url = "http://127.0.0.1:6790/score"
 
 predictions = requests.post(url, data, headers = headers)
 pred = json.loads(predictions.json())
