@@ -65,8 +65,9 @@ def train(
         logger=wandb_logger,  # W&B integration
         max_epochs=epochs,  # number of epochs
         deterministic=True,  # keep it deterministic
-        # default_root_dir=os.path.join(CHECKPOINT_PATH, name + ".") ** kwargs,
+        # default_root_dir=os.path.join(CHECKPOINT_PATH, name + "."),
         callbacks=checkpoint_callback,
+        ** kwargs,
     )
 
     trainer.fit(model, dm)
