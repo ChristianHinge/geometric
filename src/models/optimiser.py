@@ -2,6 +2,7 @@ import logging
 import os
 
 import pytorch_lightning as pl
+import torch
 import wandb
 from pytorch_lightning.loggers import WandbLogger
 
@@ -10,6 +11,8 @@ from src.models.model import GCN
 
 
 class Optimiser:
+    def __init__(self, seed: int):
+        self.seed = seed
 
     def optimise(self, configuration, counts):
         wandb.login(key=os.getenv("WANDB_KEY"))
@@ -17,16 +20,16 @@ class Optimiser:
             configuration, project="Geometric", entity="classy_geometric")
         wandb.agent(sweep_id, function=self.train, count=counts, project="Geometric",
                     entity="classy_geometric")
+        self.seed = seed
 
-    @staticmethod
-    def train():
+    def train(self):
         log = logging.getLogger(__name__)
         with wandb.init():
             wandb_logger = WandbLogger(project="geometric_hyp_opt", entity="classy_geometric")
 
             dm = MUTANGDataModule(batch_size=wandb.config.batch_size)
             dataset = dm.prepare_data()
-
+            torch.manual_seed(self.seed)
             model = GCN(
                 dataset.num_node_features,
                 dataset.num_classes,

@@ -18,7 +18,7 @@ def test_env():
 
     x = freeze.freeze()
     for p in x:
-        if '-e ' not in p: 
+        if '-e ' not in p:
             freeze_lines.append(p)
 
     req_lines = [i for i in req_lines if not ('#' in i)]

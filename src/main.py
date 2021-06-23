@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Union
 
 import hydra
-import torch
 from omegaconf import DictConfig
 
 from src.models import train_model, test_model
@@ -10,31 +9,31 @@ from src.models.optimiser import Optimiser
 from src.settings.configurations import Training, Evaluation, dict_
 
 
-def run_train(cfg: Union[Training, DictConfig]):
-    train_model.train(name=datetime.strftime(datetime.now(), '%d-%H-%M'), **cfg)
+def run_train(cfg: Union[Training, DictConfig], seed):
+    train_model.train(seed, name=datetime.strftime(datetime.now(), '%d-%H-%M'), **cfg)
 
 
-def run_eval(cfg: Union[Evaluation, DictConfig]):
-    test_model.eval(**cfg)
+def run_eval(cfg: Union[Evaluation, DictConfig], seed):
+    test_model.eval(seed, **cfg)
 
 
-def run_optimise(cfg: DictConfig):
+def run_optimise(cfg: DictConfig, seed):
     cfg = cfg['optimise']
-    Optimiser().optimise(dict_(cfg['config']), cfg['counts'])
+    Optimiser(seed).optimise(dict_(cfg['config']), cfg['counts'])
 
 
 @hydra.main(config_path='config', config_name='run_mode')
 def main(cfg: DictConfig):
-    torch.manual_seed(cfg['seed'])
+    seed = cfg['seed']
 
     if 'train' in cfg:
-        run_train(cfg['train'])
+        run_train(cfg['train'], seed)
 
     if 'evaluate' in cfg:
-        run_eval(cfg['evaluate'])
+        run_eval(cfg['evaluate'], seed)
 
     if 'optimise' in cfg:
-        run_optimise(cfg)
+        run_optimise(cfg, seed)
 
 
 if __name__ == '__main__':

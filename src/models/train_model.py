@@ -2,6 +2,7 @@ import logging
 import os
 
 import pytorch_lightning as pl
+import torch
 import wandb
 from dotenv import load_dotenv, find_dotenv
 from pytorch_lightning.callbacks import ModelCheckpoint
@@ -13,6 +14,7 @@ from src.settings.paths import CHECKPOINT_PATH
 
 
 def train(
+    seed: int,
     lr: float,
     epochs: int,
     batch_size: int,
@@ -27,21 +29,16 @@ def train(
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
 
-    if azure:
-        from azureml.core import Run
-
-        run = Run.get_context()
-
-
     # Initialise wandb logger
     wandb.login(key=os.getenv("WANDB_KEY"))
     wandb_logger = WandbLogger(
         name=name, project="Geometric", entity="classy_geometric"
     )
 
-    dm = MUTANGDataModule(batch_size=batch_size)
+    dm = MUTANGDataModule(batch_size=batch_size, seed=seed)
     dataset = dm.prepare_data()
 
+    torch.manual_seed(seed)
     model = GCN(
         dataset.num_node_features,
         dataset.num_classes,
@@ -83,12 +80,17 @@ def train(
     os.rename(best_path, new_path_name)
 
     if azure:
-        log.info('-- Registring model in azure workspace --')
+        log.info('-- Registering model in azure workspace --')
 
-        run.upload_file(name=os.path.join("outputs", model_name), path_or_stream=os.path.join(CHECKPOINT_PATH,model_name))
+        from azureml.core import Run
+
+        run = Run.get_context()
+
+        run.upload_file(name=os.path.join("outputs", model_name),
+                        path_or_stream=os.path.join(CHECKPOINT_PATH, model_name))
 
         run.register_model(
-            model_path=os.path.join("outputs",model_name),
+            model_path=os.path.join("outputs", model_name),
             model_name=model_name,
             tags={"Training context": "Training of GNN model"},
             properties={},
