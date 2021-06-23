@@ -20,7 +20,6 @@ class Optimiser:
             configuration, project="Geometric", entity="classy_geometric")
         wandb.agent(sweep_id, function=self.train, count=counts, project="Geometric",
                     entity="classy_geometric")
-        self.seed = seed
 
     def train(self):
         log = logging.getLogger(__name__)
