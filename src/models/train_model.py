@@ -1,26 +1,37 @@
+import logging
+import os
+
 import pytorch_lightning as pl
 import wandb
-from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import ModelCheckpoint
-from src.models.model import GCN
-from src.data.datamodule import MUTANGDataModule
-from src.settings import CHECKPOINT_PATH
-import os
 from dotenv import load_dotenv, find_dotenv
+from pytorch_lightning.callbacks import ModelCheckpoint
+from pytorch_lightning.loggers import WandbLogger
+
+from src.data.datamodule import MUTANGDataModule
+from src.models.model import GCN
+from src.settings.paths import CHECKPOINT_PATH
 
 
 def train(
     lr: float,
-    epochs: float,
+    epochs: int,
     batch_size: int,
-    layers: int,
-    GPU: bool,
-    p: float,
+    layers: list,
+    gpu: bool,
+    dropout_rate: float,
     name: str,
+    azure: bool,
 ):
+    log = logging.getLogger(__name__)
 
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
+
+    if azure:
+        from azureml.core import Run
+
+        run = Run.get_context()
+
 
     # Initialise wandb logger
     wandb.login(key=os.getenv("WANDB_KEY"))
@@ -36,7 +47,7 @@ def train(
         dataset.num_classes,
         hidden_channels=layers,
         lr=lr,
-        p=p,
+        p=dropout_rate,
     )
 
     filename = f"{name}"
@@ -48,7 +59,7 @@ def train(
         mode="max",
     )
 
-    if GPU:
+    if gpu:
         kwargs = {"gpus": -1, "precision": 16}
     else:
         kwargs = {"gpus": None, "precision": 32}
@@ -66,6 +77,19 @@ def train(
     # Append wandb run ID to name in order for continue test logging if needed
     best_path = checkpoint_callback.best_model_path
     version = wandb_logger.version
-    new_path_name = os.path.join(CHECKPOINT_PATH, filename + "_" + version + ".ckpt")
+    model_name = filename + "_" + version + ".ckpt"
+    new_path_name = os.path.join(CHECKPOINT_PATH, model_name)
 
     os.rename(best_path, new_path_name)
+
+    if azure:
+        log.info('-- Registring model in azure workspace --')
+
+        run.upload_file(name=os.path.join("outputs", model_name), path_or_stream=os.path.join(CHECKPOINT_PATH,model_name))
+
+        run.register_model(
+            model_path=os.path.join("outputs",model_name),
+            model_name=model_name,
+            tags={"Training context": "Training of GNN model"},
+            properties={},
+        )

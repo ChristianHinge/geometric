@@ -14,6 +14,7 @@ __pycache__/
 env/
 venv/
 .venv/
+venv.nosync
 build/
 develop-eggs/
 dist/
@@ -107,3 +108,10 @@ target/
 
 # Mypy cache
 .mypy_cache/
+
+# TorchServe
+model_store
+logs
+
+# Hydra
+src/outputs/
