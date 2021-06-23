@@ -24,15 +24,6 @@ env.docker.base_image = None
 env.docker.base_dockerfile = "src/cloud/Dockerfile.3"
 env.python.user_managed_dependencies=True
 
-#
-#(name="geo-docker-deploy")
-#env.docker.enabled = True
-#env.docker.base_image = None
-#env.docker.base_dockerfile = "src/cloud/Dockerfile.test"
-#env.python.user_managed_dependencies=True
-#env.python.interpreter_path = "/opt/venv/bin/python"
-
-# Configure the scoring environment
 inference_config = InferenceConfig(entry_script=script_file,
                                    environment=env)
 

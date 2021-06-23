@@ -17,7 +17,6 @@ from dotenv import load_dotenv, find_dotenv
 from omegaconf import DictConfig
 import sys
 
-
 def main():
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
@@ -51,7 +50,6 @@ def main():
     env.docker.base_image = None
     env.docker.base_dockerfile = "src/cloud/Dockerfile.train"
     env.python.user_managed_dependencies=True
-    #env.python.interpreter_path = "/opt/venv/bin/python"
     env.environment_variables = {
         "WANDB_KEY":os.getenv("WANDB_KEY")
     }
@@ -61,7 +59,7 @@ def main():
         source_directory='.',
         script='src/main.py',
         compute_target = compute_target,
-        arguments = ["azure=True"]+args)
+        arguments = ["mode.train.azure=True"]+args)
 
     exp = Experiment(ws, exp)
     run = exp.submit(config)

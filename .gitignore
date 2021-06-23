@@ -1,6 +1,6 @@
 #Specific to Geometric Project
 *desktop.ini
-
+outputs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
