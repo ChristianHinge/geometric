@@ -28,7 +28,7 @@ config:
       values: [ [ 64, 64, 64 ], [ 64, 32, 16 ] ]
 
     GPU:
-      value: False
+      value: false
 
     p:
       distribution: uniform

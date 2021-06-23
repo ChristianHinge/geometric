@@ -7,7 +7,7 @@ from omegaconf import DictConfig
 
 from src.models import train_model, test_model
 from src.models.optimiser import Optimiser
-from src.settings.configurations import Training, Evaluation
+from src.settings.configurations import Training, Evaluation, dict_
 
 
 def run_train(cfg: Union[Training, DictConfig]):
@@ -20,7 +20,7 @@ def run_eval(cfg: Union[Evaluation, DictConfig]):
 
 def run_optimise(cfg: DictConfig):
     cfg = cfg['optimise']
-    Optimiser().optimise(cfg['config'], cfg['counts'])
+    Optimiser().optimise(dict_(cfg['config']), cfg['counts'])
 
 
 @hydra.main(config_path='config', config_name='run_mode')

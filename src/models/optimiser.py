@@ -14,8 +14,8 @@ class Optimiser:
     def optimise(self, configuration, counts):
         wandb.login(key=os.getenv("WANDB_KEY"))
         sweep_id = wandb.sweep(
-            configuration, project="geometric_hyp_opt", entity="classy_geometric")
-        wandb.agent(sweep_id, function=self.train, count=counts, project="geometric_hyp_opt",
+            configuration, project="Geometric", entity="classy_geometric")
+        wandb.agent(sweep_id, function=self.train, count=counts, project="Geometric",
                     entity="classy_geometric")
 
     @staticmethod
