@@ -1,4 +1,4 @@
-counts: 1
+counts: 50
 config:
   name: second-sweep
   method: bayes
@@ -15,17 +15,17 @@ config:
     lr:
       # log uniform distribution between exp(min) and exp(max)
       distribution: log_uniform
-      min: -9.21   # exp(-9.21) = 1e-4
+      min: -11.51   # exp(-9.21) = 1e-5
       max: -4.61    # exp(-4.61) = 1e-2
 
     epochs:
-      value: 10
+      value: 50
 
     batch_size:
-      values: [ 32, 64, 128 ]
+      values: [ 16, 32, 64, 128, 256 ]
 
     layers:
-      values: [ [ 64, 64, 64 ], [ 64, 32, 16 ] ]
+      values: [ [ 64, 64, 64 ], [ 64, 32, 16 ], [ 64, 32, 64, 16, 8 ], [ 64, 32, 64 ] ]
 
     GPU:
       value: false

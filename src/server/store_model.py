@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
 from src.models.model_saver import ModelSaver
-from src.settings import MODEL_STORE_PATH
+from src.settings.paths import MODEL_STORE_PATH
 
 
 def store_model():

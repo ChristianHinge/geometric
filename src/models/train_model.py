@@ -27,12 +27,6 @@ def train(
     dotenv_path = find_dotenv()
     load_dotenv(dotenv_path)
 
-    if azure:
-        from azureml.core import Run
-
-        run = Run.get_context()
-
-
     # Initialise wandb logger
     wandb.login(key=os.getenv("WANDB_KEY"))
     wandb_logger = WandbLogger(
@@ -83,12 +77,17 @@ def train(
     os.rename(best_path, new_path_name)
 
     if azure:
-        log.info('-- Registring model in azure workspace --')
+        log.info('-- Registering model in azure workspace --')
 
-        run.upload_file(name=os.path.join("outputs", model_name), path_or_stream=os.path.join(CHECKPOINT_PATH,model_name))
+        from azureml.core import Run
+
+        run = Run.get_context()
+
+        run.upload_file(name=os.path.join("outputs", model_name),
+                        path_or_stream=os.path.join(CHECKPOINT_PATH, model_name))
 
         run.register_model(
-            model_path=os.path.join("outputs",model_name),
+            model_path=os.path.join("outputs", model_name),
             model_name=model_name,
             tags={"Training context": "Training of GNN model"},
             properties={},
