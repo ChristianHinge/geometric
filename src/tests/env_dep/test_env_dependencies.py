@@ -1,12 +1,14 @@
+import os
+
 from pip._internal.operations import freeze
-from src.settings import MODULE_PATH
-import os 
+
+from src.settings.paths import MODULE_PATH
+
 
 def test_env():
-
-    with open(os.path.join(MODULE_PATH,'requirements.txt')) as f:
+    with open(os.path.join(MODULE_PATH, 'requirements.txt')) as f:
         req_lines = f.readlines()
-    with open(os.path.join(MODULE_PATH,'requirements-geometric.txt')) as f:
+    with open(os.path.join(MODULE_PATH, 'requirements-geometric.txt')) as f:
         req_geo_lines = f.readlines()
     req_geo = [i.split(' \n')[0] for i in req_geo_lines]
 
