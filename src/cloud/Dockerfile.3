@@ -51,7 +51,7 @@ RUN pip install torch-sparse
 
 RUN pip install torch-scatter 
 RUN pip install pytorch_lightning
-RUN pip install -e git+https://github.com/ChristianHinge/geometric@feature/azure_train#egg=src
+RUN pip install -e git+https://github.com/ChristianHinge/geometric@development#egg=src
 RUN conda clean -aqy && \
     rm -rf ~/miniconda/pkgs && \
     find ~/miniconda/ -type d -name __pycache__ -prune -exec rm -rf {} \;

@@ -1,4 +1,5 @@
 optimise:
+  gpu: true
   counts: 50
   config:
     name: second-sweep
@@ -27,9 +28,6 @@ optimise:
 
       layers:
         values: [ [ 64, 64, 64 ], [ 64, 32, 16 ], [ 64, 32, 64, 16, 8 ], [ 64, 32, 64 ] ]
-
-      GPU:
-        value: false
 
       p:
         distribution: uniform

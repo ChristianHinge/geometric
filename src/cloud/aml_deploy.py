@@ -5,9 +5,8 @@ from azureml.core.webservice import AciWebservice, LocalWebservice
 from azureml.core.model import InferenceConfig
 from azureml.core.model import Model
 from azureml.core import Environment
-import hydra
+import omegaconf
 
-@hydra.main(config_path='../config',config_name="deployment.yaml")
 def deploy(cfgs):
     # Load the workspace from the saved config file
     ws = Workspace.from_config("src/cloud/config.json")
@@ -40,4 +39,5 @@ def deploy(cfgs):
     service = Model.deploy(ws, service_name, [model], inference_config, deployment_config)
 
 if __name__ == "__main__":
-    deploy()
+    cfgs = omegaconf.OmegaConf.load("src/config/deployment.yaml")
+    deploy(cfgs)
