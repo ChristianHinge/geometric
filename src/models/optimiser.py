@@ -8,16 +8,20 @@ from pytorch_lightning.loggers import WandbLogger
 
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
-
+from src.settings.configurations import dict_
 
 class Optimiser:
     def __init__(self, seed: int):
         self.seed = seed
 
-    def optimise(self, configuration, counts):
+    def optimise(self, configuration):
+        counts = configuration["counts"]
+        self.gpu = configuration["gpu"]
+        config = configuration["config"]
+
         wandb.login(key=os.getenv("WANDB_KEY"))
         sweep_id = wandb.sweep(
-            configuration, project="Geometric", entity="classy_geometric")
+            dict_(config), project="Geometric", entity="classy_geometric")
         wandb.agent(sweep_id, function=self.train, count=counts, project="Geometric",
                     entity="classy_geometric")
 
@@ -25,7 +29,7 @@ class Optimiser:
         log = logging.getLogger(__name__)
         with wandb.init():
             wandb_logger = WandbLogger(project="geometric_hyp_opt", entity="classy_geometric")
-
+            
             dm = MUTANGDataModule(batch_size=wandb.config.batch_size)
             dataset = dm.prepare_data()
             torch.manual_seed(self.seed)
@@ -40,7 +44,7 @@ class Optimiser:
             log.debug(model)
             log.info(wandb.config.layers)
 
-            if wandb.config.GPU:
+            if self.gpu:
                 kwargs = {"gpus": -1, "precision": 16}
             else:
                 kwargs = {"gpus": None, "precision": 32}
@@ -49,7 +53,7 @@ class Optimiser:
                 logger=wandb_logger,  # W&B integration
                 max_epochs=wandb.config.epochs,  # number of epochs
                 deterministic=True,  # keep it deterministic
-                # default_root_dir=os.path.join(CHECKPOINT_PATH, name + ".") ** kwargs,
+                **kwargs,
             )
 
             trainer.fit(model, dm)

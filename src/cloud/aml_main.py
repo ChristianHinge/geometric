@@ -59,7 +59,7 @@ def main():
         source_directory='.',
         script='src/main.py',
         compute_target = compute_target,
-        arguments = ["mode.train.azure=True"]+args)
+        arguments = ["azure=True"]+args)
 
     exp = Experiment(ws, exp)
     run = exp.submit(config)
