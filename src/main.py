@@ -19,6 +19,7 @@ def run_eval(cfg: Union[Evaluation, DictConfig]):
 
 
 def run_optimise(cfg: DictConfig):
+    cfg = cfg['optimise']
     Optimiser().optimise(cfg['config'], cfg['counts'])
 
 

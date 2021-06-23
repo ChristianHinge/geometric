@@ -1,7 +1,7 @@
 counts: 1
 config:
-  name: second-sweep,
-  method: bayes,
+  name: second-sweep
+  method: bayes
   metric:
     name: validation/accuracy
     goal: maximize
@@ -25,12 +25,12 @@ config:
       values: [ 32, 64, 128 ]
 
     layers:
-      values: [ [ 64, 64, 64 ],[ 64, 32, 16 ] ]
+      values: [ [ 64, 64, 64 ], [ 64, 32, 16 ] ]
 
     GPU:
       value: False
 
     p:
-      distribution: uniform,
-      min: 0,
+      distribution: uniform
+      min: 0
       max: 0.5
