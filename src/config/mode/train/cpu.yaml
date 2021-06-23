@@ -6,3 +6,4 @@ train:
   layers: [ 64, 32, 16 ]
   gpu: false
   azure: false
+  modelname: geometric_v1
