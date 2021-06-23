@@ -1,6 +1,6 @@
 seed: 42
 defaults:
-#  - train: cpu
-#  - evaluate: wandb
-  - optimise: wandb
-#  - aml: cpu
+  - mode: train/cpu
+#  - mode: evaluate/wandb
+#  - mode: optimise/wandb
+#  - mode: aml/cpu
