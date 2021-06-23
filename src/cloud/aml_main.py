@@ -2,6 +2,7 @@ from azureml.core.authentication import (
     AzureCliAuthentication,
     InteractiveLoginAuthentication,
 )
+
 from azureml.core import Workspace
 from azureml.core import Environment
 from azureml.core import ScriptRunConfig
@@ -10,97 +11,59 @@ import configparser
 import argparse
 from src import settings
 import os
-
-
+from src.settings import paths
+import hydra
 from dotenv import load_dotenv, find_dotenv
+from omegaconf import DictConfig
+import sys
 
-dotenv_path = find_dotenv()
-load_dotenv(dotenv_path)
+def main():
+    dotenv_path = find_dotenv()
+    load_dotenv(dotenv_path)
+    args  = sys.argv[1:]
+    target = None
+    cfg = configparser.ConfigParser()
+    cfg.read("src/config/aml_config.ini")
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--train", "-t", dest="train", action="store_true", help="Train model"
-)
-parser.add_argument("--test", "-v", dest="test", help="Test model from given path")
-parser.add_argument(
-    "-c",
-    "--config_section",
-    action="store",
-    type=str,
-    help="Name of the config section for overwriting default values",
-)
-parser.add_argument(
-    "-aml_c",
-    "--aml_config_section",
-    action="store",
-    type=str,
-    help="Name of the config section for overwriting default azure run",
-)
+    if "--gpu" in args:
+        target = "geo-gpu"
+        args.remove("--gpu")
+    elif "--cpu" in args:
+        target = "geo-cpu"
+        args.remove("--cpu")
+    else:
+        target = cfg["DEFAULT"]["target"]
 
-args = parser.parse_args()
-cfg = configparser.ConfigParser()
-cfg.read(os.path.join("src", "config", "aml_config.ini"))
+    if "-e" in args:
+        exp = args[args.index("-e") + 1]
+        args.remove("-e")
+        args.remove(exp)
+    else:
+        exp = cfg["DEFAULT"]["exp"]
 
-if args.aml_config_section is not None:
-    cfg = cfg[args.aml_config_section] 
-else:
-    cfg = cfg["DEFAULT"]
+    ws = Workspace.from_config(os.path.join(paths.CLOUD_PATH,"config.json"))
+    compute_target = ws.compute_targets[target]
 
+    #DOCKER
+    env = Environment(name="geo-docker-train")
+    env.docker.enabled = True
+    env.docker.base_image = None
+    env.docker.base_dockerfile = "src/cloud/Dockerfile.train"
+    env.python.user_managed_dependencies=True
+    env.environment_variables = {
+        "WANDB_KEY":os.getenv("WANDB_KEY")
+    }
 
-ws = Workspace.from_config(os.path.join(settings.CLOUD_PATH,"config.json"))
+    config = ScriptRunConfig(
+        environment=env,  # set the python environment
+        source_directory='.',
+        script='src/main.py',
+        compute_target = compute_target,
+        arguments = ["mode.train.azure=True"]+args)
 
-## Uncomment all below if you are not able to access workspace ##
+    exp = Experiment(ws, exp)
+    run = exp.submit(config)
+    print(run.get_portal_url())
 
-#interactive_auth = InteractiveLoginAuthentication(
-#    tenant_id="your tenant id",
-#    force=True
-#)
-
-#ws = Workspace(
-#    subscription_id="",
-#    resource_group="Geometric-Group",
-#    workspace_name="geometric-ws",
-#    auth=interactive_auth,
-#)
-
-compute_target = ws.compute_targets[cfg["ComputeTarget"]]
-
-# start compute target
-# compute_target.start(wait_for_completion=True,show_output=True)
-
-# DOCKER
-env = Environment(name="geo-docker-train")
-env.docker.enabled = True
-env.docker.base_image = None
-env.docker.base_dockerfile = "src/cloud/Dockerfile"
-env.python.user_managed_dependencies = True
-env.python.interpreter_path = "/opt/venv/bin/python"
-env.environment_variables = {"WANDB_KEY": os.getenv("WANDB_KEY")}
-
-# Arguments for main.py
-arguments = ["--aml"]
-
-if args.train:
-    arguments.append("--train")
-if args.test:
-    arguments.append("--test")
-if args.config_section:
-    arguments.append("-c")
-    arguments.append(args.config_section)
-
-
-config = ScriptRunConfig(
-    environment=env,  # set the python environment
-    source_directory=".",
-    script="src/main.py",
-    compute_target=compute_target,
-    arguments=arguments,
-)
-
-exp = Experiment(ws, cfg["Experiment"])
-run = exp.submit(config)
-print(run.get_portal_url())
-
-# Wait until trial is done to stop compute target
-run.wait_for_completion()
-compute_target.stop(wait_for_completion=True, show_output=True)
+if __name__ == "__main__":
+    main()
