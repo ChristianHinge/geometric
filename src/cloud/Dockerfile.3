@@ -18,7 +18,6 @@ RUN apt-get update --fix-missing && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
-
 RUN useradd --create-home dockeruser
 WORKDIR /home/dockeruser
 USER dockeruser
