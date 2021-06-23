@@ -10,7 +10,7 @@ import configparser
 import argparse
 from src import settings
 import os
-
+from src.settings import paths
 
 from dotenv import load_dotenv, find_dotenv
 
@@ -18,36 +18,40 @@ dotenv_path = find_dotenv()
 load_dotenv(dotenv_path)
 
 parser = argparse.ArgumentParser()
+
 parser.add_argument(
-    "--train", "-t", dest="train", action="store_true", help="Train model"
+    "--cpu",
+    action="store_true",
+    type=bool,
+    help="",
 )
-parser.add_argument("--test", "-v", dest="test", help="Test model from given path")
+
 parser.add_argument(
-    "-c",
-    "--config_section",
+    "--gpu",
+    action="store_true",
+    type=bool,
+    help="",
+)
+
+parser.add_argument(
+    "-e",
+    "--experiment",
     action="store",
     type=str,
-    help="Name of the config section for overwriting default values",
-)
-parser.add_argument(
-    "-aml_c",
-    "--aml_config_section",
-    action="store",
-    type=str,
-    help="Name of the config section for overwriting default azure run",
+    help="",
+    default="exp-3"
 )
 
 args = parser.parse_args()
-cfg = configparser.ConfigParser()
-cfg.read(os.path.join("src", "config", "aml_config.ini"))
 
-if args.aml_config_section is not None:
-    cfg = cfg[args.aml_config_section] 
+if args.gpu:
+    target = "geo-gpu"
+elif args.cpu:
+    target = "geo-cpu"
 else:
-    cfg = cfg["DEFAULT"]
+    raise Exception("Please choose either gpu or cpu")
 
-
-ws = Workspace.from_config(os.path.join(settings.CLOUD_PATH,"config.json"))
+ws = Workspace.from_config(os.path.join(paths.CLOUD_PATH,"config.json"))
 
 ## Uncomment all below if you are not able to access workspace ##
 
@@ -63,7 +67,7 @@ ws = Workspace.from_config(os.path.join(settings.CLOUD_PATH,"config.json"))
 #    auth=interactive_auth,
 #)
 
-compute_target = ws.compute_targets[cfg["ComputeTarget"]]
+compute_target = ws.compute_targets[target]
 
 #DOCKER
 env = Environment(name="geo-docker-train")
@@ -75,31 +79,18 @@ env.python.user_managed_dependencies=True
 env.environment_variables = {
     "WANDB_KEY":os.getenv("WANDB_KEY")
 }
-print("======================")
-print(os.getenv("WANDB_KEY"))
-print("=======================")
-#Arguments for main.py
 
 arguments = ["--aml"]
-
-if args.train:
-    arguments.append("--train")
-if args.test:
-    arguments.append("--test")
-if args.config_section:
-    arguments.append("-c")
-    arguments.append(args.config_section)
-
 
 config = ScriptRunConfig(
     environment=env,  # set the python environment
     source_directory='.',
     script='src/main.py',
     compute_target = compute_target,
-    arguments = ["--aml","--train"])
+    arguments = [""]
 
 
-exp = Experiment(ws, cfg["Experiment"])
+exp = Experiment(ws, args.experiment)
 run = exp.submit(config)
 print(run.get_portal_url())
 
