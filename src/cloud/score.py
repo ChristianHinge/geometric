@@ -19,7 +19,13 @@ def init():
     dotenv.load_dotenv(dotenv_path)
     global model
 
-    model_path = os.path.join(os.getenv('AZUREML_MODEL_DIR'), 'model.ckpt')
+    model_dir = os.getenv('AZUREML_MODEL_DIR')
+    files = os.listdir(model_dir)
+    
+    for f in files:
+        if f[-4] == "ckpt":
+            model_path = os.path.join(model_dir, f)
+            break
 
     model = GCN.load_from_checkpoint(model_path)
 
