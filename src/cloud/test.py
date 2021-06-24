@@ -6,5 +6,5 @@ ws = Workspace.from_config("src/cloud/config.json")
 print('Ready to use Azure ML {} to work with {}'.format(azureml.core.VERSION, ws.name))
 # Choose the webservice you are interested i
 
-service = Webservice(ws, 'endpoint-2')
+service = Webservice(ws, 'endpoint-6')
 print(service.get_logs())

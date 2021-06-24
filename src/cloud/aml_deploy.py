@@ -1,5 +1,5 @@
 import azureml.core
-from azureml.core import Workspace
+from azureml.core import Workspace,Webservice
 import os
 from azureml.core.webservice import AciWebservice, LocalWebservice
 from azureml.core.model import InferenceConfig
@@ -35,7 +35,8 @@ def deploy(cfgs):
         deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
     
     service_name = cfgs['service-name']
-
+    #service  = Webservice(name=service_name, workspace=ws)
+    #service.update(inference_config=inference_config)
     service = Model.deploy(ws, service_name, [model], inference_config, deployment_config)
 
 if __name__ == "__main__":
