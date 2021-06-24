@@ -3,9 +3,9 @@ import os
 
 import pytorch_lightning as pl
 import torch
+import wandb
 from pytorch_lightning.loggers import WandbLogger
 
-import wandb
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
 from src.settings.configurations import dict_
@@ -39,7 +39,7 @@ class Optimiser:
                 project="geometric_hyp_opt", entity="classy_geometric"
             )
 
-            dm = MUTANGDataModule(batch_size=wandb.config.batch_size)
+            dm = MUTANGDataModule(batch_size=wandb.config.batch_size, seed=self.seed)
             dataset = dm.prepare_data()
             torch.manual_seed(self.seed)
             model = GCN(

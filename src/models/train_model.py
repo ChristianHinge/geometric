@@ -3,11 +3,11 @@ import os
 
 import pytorch_lightning as pl
 import torch
+import wandb
 from dotenv import find_dotenv, load_dotenv
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 
-import wandb
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
 from src.settings.paths import CHECKPOINT_PATH
@@ -65,8 +65,9 @@ def train(
         logger=wandb_logger,  # W&B integration
         max_epochs=epochs,  # number of epochs
         deterministic=True,  # keep it deterministic
-        default_root_dir=os.path.join(CHECKPOINT_PATH, name + ".") ** kwargs,
+        default_root_dir=os.path.join(CHECKPOINT_PATH, name + "."),
         callbacks=checkpoint_callback,
+        **kwargs
     )
 
     trainer.fit(model, dm)

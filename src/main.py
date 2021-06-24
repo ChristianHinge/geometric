@@ -6,7 +6,7 @@ from omegaconf import DictConfig
 
 from src.models import test_model, train_model
 from src.models.optimiser import Optimiser
-from src.settings.configurations import Evaluation, Training, dict_
+from src.settings.configurations import Evaluation, Training
 
 
 def run_train(cfg: Union[Training, DictConfig], seed, azure):
@@ -33,7 +33,7 @@ def main(cfg: DictConfig):
         run_train(cfg["train"], seed, azure)
 
     if "evaluate" in cfg:
-        run_eval(cfg["evaluate"], seed, azure)
+        run_eval(cfg["evaluate"], seed)
 
     if "optimise" in cfg:
         run_optimise(cfg["optimise"], seed)
