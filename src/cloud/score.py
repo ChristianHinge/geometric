@@ -20,16 +20,16 @@ def init():
     project_dir = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
     dotenv_path = os.path.join(project_dir, ".env")
     dotenv.load_dotenv(dotenv_path)
+    model_dir = os.path.join(os.getenv('AZUREML_MODEL_DIR'))
     global model
 
-    model_dir = os.getenv("AZUREML_MODEL_DIR")
-    files = os.listdir(model_dir)
-
     for f in files:
-        if f[-4] == "ckpt":
+        if "ckpt" in f:
             model_path = os.path.join(model_dir, f)
             break
-
+    else:
+        model_path=os.path.join(model_dir, '22-10-12_190dze4r.ckpt')
+        
     model = GCN.load_from_checkpoint(model_path)
 
     model.eval()

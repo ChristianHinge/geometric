@@ -1,3 +1,5 @@
+import azureml.core
+from azureml.core import Workspace,Webservice
 import os
 
 import azureml.core
@@ -33,14 +35,12 @@ def deploy(cfgs):
     if cfgs["local"]:
         deployment_config = LocalWebservice.deploy_configuration(port=6790)
     else:
-        deployment_config = AciWebservice.deploy_configuration(cpu_cores=1, memory_gb=1)
-
-    service_name = cfgs["service-name"]
-
-    service = Model.deploy(
-        ws, service_name, [model], inference_config, deployment_config
-    )
-
+        deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
+    
+    service_name = cfgs['service-name']
+    #service  = Webservice(name=service_name, workspace=ws)
+    #service.update(inference_config=inference_config)
+    service = Model.deploy(ws, service_name, [model], inference_config, deployment_config)
 
 if __name__ == "__main__":
     cfgs = omegaconf.OmegaConf.load("src/config/deployment.yaml")
