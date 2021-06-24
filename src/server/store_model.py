@@ -14,17 +14,13 @@ def store_model():
 
     gcn = GCN()
 
-    kwargs = {'gpus': None, 'precision': 32}
+    kwargs = {"gpus": None, "precision": 32}
 
-    trainer = pl.Trainer(
-        max_epochs=10,
-        deterministic=True,
-        **kwargs
-    )
+    trainer = pl.Trainer(max_epochs=10, deterministic=True, **kwargs)
 
     trainer.fit(gcn, data_module)
-    saver.save_model(gcn, os.path.join(MODEL_STORE_PATH, 'geometric.pt'))
+    saver.save_model(gcn, os.path.join(MODEL_STORE_PATH, "geometric.pt"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     store_model()

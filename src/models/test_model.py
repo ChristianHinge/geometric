@@ -1,10 +1,10 @@
 import os
 
 import pytorch_lightning as pl
-import wandb
 from azureml.core import Workspace
 from pytorch_lightning.loggers import WandbLogger
 
+import wandb
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
 from src.settings.paths import CHECKPOINT_PATH, CLOUD_PATH
@@ -13,10 +13,11 @@ from src.settings.paths import CHECKPOINT_PATH, CLOUD_PATH
 def eval(seed: int, project: str, filename: str, entity: str, azure_stored: bool):
     wandb.login(key=os.getenv("WANDB_KEY"))
 
-    run_name = filename.split('_')[0]
-    run_id = filename.replace('.', '_').split('_')[1]
-    wandlogger = WandbLogger(name=run_name, project=project, resume=True, version=run_id,
-                             entity=entity)
+    run_name = filename.split("_")[0]
+    run_id = filename.replace(".", "_").split("_")[1]
+    wandlogger = WandbLogger(
+        name=run_name, project=project, resume=True, version=run_id, entity=entity
+    )
 
     if azure_stored:
         ws = Workspace.from_config(os.path.join(CLOUD_PATH, "config.json"))
@@ -33,8 +34,12 @@ def eval(seed: int, project: str, filename: str, entity: str, azure_stored: bool
     trainer.test(model, datamodule=dm)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    eval(seed=42, project='Geometric', filename='22-10-12_190dze4r.ckpt',
-         entity='classy_geometric',
-         azure_stored=True)
+    eval(
+        seed=42,
+        project="Geometric",
+        filename="22-10-12_190dze4r.ckpt",
+        entity="classy_geometric",
+        azure_stored=True,
+    )

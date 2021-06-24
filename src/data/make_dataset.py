@@ -8,8 +8,7 @@
 # from dotenv import find_dotenv, load_dotenv
 
 import torch
-from torch_geometric import datasets
-from torch_geometric import data
+from torch_geometric import data, datasets
 
 from src.settings import CLEANED_DATA_PATH, NOTCLEANED_DATA_PATH
 

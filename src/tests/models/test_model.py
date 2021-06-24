@@ -11,7 +11,6 @@ def model():
 
 
 class TestGCN:
-
     def test_model_structure(self, model):
         assert model.conv_layers[0].in_channels == 2
         assert model.conv_layers[0].out_channels == 64

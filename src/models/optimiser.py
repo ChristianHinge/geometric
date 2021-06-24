@@ -3,12 +3,13 @@ import os
 
 import pytorch_lightning as pl
 import torch
-import wandb
 from pytorch_lightning.loggers import WandbLogger
 
+import wandb
 from src.data.datamodule import MUTANGDataModule
 from src.models.model import GCN
 from src.settings.configurations import dict_
+
 
 class Optimiser:
     def __init__(self, seed: int):
@@ -21,15 +22,23 @@ class Optimiser:
 
         wandb.login(key=os.getenv("WANDB_KEY"))
         sweep_id = wandb.sweep(
-            dict_(config), project="Geometric", entity="classy_geometric")
-        wandb.agent(sweep_id, function=self.train, count=counts, project="Geometric",
-                    entity="classy_geometric")
+            dict_(config), project="Geometric", entity="classy_geometric"
+        )
+        wandb.agent(
+            sweep_id,
+            function=self.train,
+            count=counts,
+            project="Geometric",
+            entity="classy_geometric",
+        )
 
     def train(self):
         log = logging.getLogger(__name__)
         with wandb.init():
-            wandb_logger = WandbLogger(project="geometric_hyp_opt", entity="classy_geometric")
-            
+            wandb_logger = WandbLogger(
+                project="geometric_hyp_opt", entity="classy_geometric"
+            )
+
             dm = MUTANGDataModule(batch_size=wandb.config.batch_size)
             dataset = dm.prepare_data()
             torch.manual_seed(self.seed)
@@ -38,9 +47,9 @@ class Optimiser:
                 dataset.num_classes,
                 hidden_channels=wandb.config.layers,
                 lr=wandb.config.lr,
-                p=wandb.config.p
+                p=wandb.config.p,
             )
-            log.debug('Model structure:')
+            log.debug("Model structure:")
             log.debug(model)
             log.info(wandb.config.layers)
 

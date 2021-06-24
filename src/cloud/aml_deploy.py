@@ -1,33 +1,36 @@
 import azureml.core
 from azureml.core import Workspace,Webservice
 import os
-from azureml.core.webservice import AciWebservice, LocalWebservice
-from azureml.core.model import InferenceConfig
-from azureml.core.model import Model
-from azureml.core import Environment
+
+import azureml.core
 import omegaconf
+from azureml.core import Environment, Workspace
+from azureml.core.model import InferenceConfig, Model
+from azureml.core.webservice import AciWebservice, LocalWebservice
+
 
 def deploy(cfgs):
     # Load the workspace from the saved config file
     ws = Workspace.from_config("src/cloud/config.json")
-    print('Ready to use Azure ML {} to work with {}'.format(azureml.core.VERSION, ws.name))
+    print(
+        "Ready to use Azure ML {} to work with {}".format(azureml.core.VERSION, ws.name)
+    )
 
-    model = ws.models[cfgs['filename']]
-    print(model.name, 'version', model.version)
+    model = ws.models[cfgs["filename"]]
+    print(model.name, "version", model.version)
 
     # Set path for scoring script
     script_file = os.path.join("src/cloud/score.py")
 
-    #DOCKER 
-    #env = Environment.from_pip_requirements("test_env","src/cloud/req_test.txt")
+    # DOCKER
+    # env = Environment.from_pip_requirements("test_env","src/cloud/req_test.txt")
     env = Environment("test")
     env.docker.enabled = True
     env.docker.base_image = None
     env.docker.base_dockerfile = "src/cloud/Dockerfile.3"
-    env.python.user_managed_dependencies=True
+    env.python.user_managed_dependencies = True
 
-    inference_config = InferenceConfig(entry_script=script_file,
-                                    environment=env)
+    inference_config = InferenceConfig(entry_script=script_file, environment=env)
 
     if cfgs["local"]:
         deployment_config = LocalWebservice.deploy_configuration(port=6790)

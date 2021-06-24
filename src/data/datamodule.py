@@ -9,8 +9,12 @@ from src.settings.paths import CLEANED_DATA_PATH, NOT_CLEANED_DATA_PATH
 
 class MUTANGDataModule(pl.LightningDataModule):
     def __init__(
-        self, batch_size: int = 32, cleaned: bool = False, split=None,
-        num_workers: int = 0, seed: int = 0
+        self,
+        batch_size: int = 32,
+        cleaned: bool = False,
+        split=None,
+        num_workers: int = 0,
+        seed: int = 0,
     ):
         super().__init__()
         if split is None:
@@ -25,7 +29,7 @@ class MUTANGDataModule(pl.LightningDataModule):
         self.seed = seed
 
         if sum(self.split) != 1:
-            raise ValueError('Expected split list to sum to 1')
+            raise ValueError("Expected split list to sum to 1")
 
     def prepare_data(self):
         return datasets.TUDataset(
@@ -56,11 +60,25 @@ class MUTANGDataModule(pl.LightningDataModule):
         )
 
     def train_dataloader(self):
-        return DataLoader(self.train_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(
+            self.train_set,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
+        )
 
     def val_dataloader(self):
-        return DataLoader(self.val_set, batch_size=self.batch_size, shuffle=True, num_workers=self.num_workers)
+        return DataLoader(
+            self.val_set,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers,
+        )
 
     def test_dataloader(self):
-        return DataLoader(self.test_set, batch_size=self.batch_size, shuffle=False, num_workers=self.num_workers)
-
+        return DataLoader(
+            self.test_set,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers,
+        )
