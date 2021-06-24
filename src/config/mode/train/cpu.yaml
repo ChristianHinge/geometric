@@ -1,0 +1,8 @@
+train:
+  epochs: 5
+  lr: 1e-3
+  batch_size: 32
+  dropout_rate: 0.5
+  layers: [ 64, 32, 16 ]
+  gpu: false
+  

@@ -1,0 +1,8 @@
+seed: 42
+azure: false
+defaults:
+#  - mode: optimise/gpu
+#  - mode: evaluate/wandb
+  - mode: optimise/gpu
+#  - mode: optimize/cpu
+#  - mode: aml/cpu

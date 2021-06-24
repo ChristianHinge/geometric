@@ -1,0 +1,5 @@
+evaluate:
+  project: Geometric
+  entity: classy_geometric
+  filename: 23-15-15_48d60twj.ckpt
+  azure_stored: true

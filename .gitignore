@@ -1,3 +1,7 @@
+#Specific to Geometric Project
+*desktop.ini
+outputs/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -8,6 +12,9 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
+venv/
+.venv/
+venv.nosync
 build/
 develop-eggs/
 dist/
@@ -76,7 +83,12 @@ target/
 .ipynb_checkpoints/
 
 # exclude data from source control by default
-/data/
+# /data/
+/wandb
+
+# datasets
+*.pt
+*MUTAG*
 
 # Mac OS-specific storage files
 .DS_Store
@@ -85,5 +97,21 @@ target/
 *.swp
 *.swo
 
+# wandb logs
+*wandb
+
+# Model formats
+*.pth
+*.ckpt
+*hparams*
+*events*
+
 # Mypy cache
 .mypy_cache/
+
+# TorchServe
+model_store
+logs
+
+# Hydra
+src/outputs/
